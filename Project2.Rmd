@@ -1,0 +1,36 @@
+---
+title: "Project2"
+author: "Michael Im"
+date: "April 9, 2017"
+output:   
+  html_document: 
+    theme: united
+    toc: yes
+    number_sections: TRUE
+    toc_float:
+      collapsed: TRUE
+---
+
+```{r, include = F}
+
+data = read.csv("sdclean.csv", header = T)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
