@@ -11,18 +11,130 @@ output:
       collapsed: TRUE
 ---
 
+#Introduction
+
 ```{r, include = F}
 
 data = read.csv("sdclean.csv", header = T)
 
 ```
 
+##Cleaning Data
+
+```{r}
+#who will match on this dataset
+
+#getting the numerical variables
+str(data)
+num = sapply(data, is.numeric)
+nums = data[,num]
+sample = nums[500,]
+```
+
+#Building the Logistic Model
+
+##Basic Model - All Variables
+
+```{r}
+#log model 1 with ALL VARIABLES
+
+#building logistic model with the numerical variables
+log1 = glm(match ~ ., data = nums, family = "binomial")
+summary(log1)
+#significant variable: gender + int_corr + age_o + samerace + race_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o + race + imprace + sports + exercise + art + gaming + clubbing + reading + tv + movies + concerts + music + shopping + yoga + exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1 + shar2_1
+#note all significant at 90% confidence interval
+
+```
+
+##90% Confidence Interval Regression (Workdown)
+
+###Model 1
+
+```{r}
+
+#log model 2 with VARIABLES THAT WERE 90% CONFIDENT FROM FIRST MODEL
+
+#building logistic model with the numerical variables
+log2 = glm(match ~ gender + int_corr + age_o + samerace + race_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o + race + imprace + sports + exercise + art + gaming + clubbing + reading + tv + movies + concerts + music + shopping + yoga + exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1 + shar2_1, data = nums, family = "binomial")
+summary(log2)
+#variables to include for next model: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing +  tv + movies + concerts + music + shopping +  exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1 
+
+#VARIABLES THAT WE TOOK OUT (stage 1)
+#gender + samerace + race_o + race + sports + reading + yoga + shar2_1
+
+```
+
+###Model 2
+
+```{r}
+#log model 3 with VARIABLES THAT WERE 90% CONFIDENT FROM THE SECOND MODEL
+
+#building logistic model with the numerical variables
+log3 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing +  tv + movies + concerts + music + shopping +  exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1, data = nums, family = "binomial")
+summary(log3)
+#variables to include for next model: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing +  tv + movies + concerts + music + exphappy + attr2_1 + intel2_1
+
+#VARIABLES THAT WE TOOK OUT (stage 2)
+#shopping + sinc2_1 + fun2_1 + amb2_1
+```
+
+###Model 3
+
+```{r}
+
+#log model 4 with VARIABLES THAT WERE 90% CONFIDENT FROM THE THIRD MODEL
+
+#building logistic model with the numerical variables
+log4 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing +  tv + movies + concerts + music + exphappy + attr2_1 + intel2_1, data = nums, family = "binomial")
+summary(log4)
+#variables to include for next model: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing + movies + concerts + music + exphappy + attr2_1 + intel2_1
+
+#VARIABLES THAT WE TOOK OUT (stage 2)
+#tv
+
+```
+
+###Model 4
+
+```{r}
+
+#log model 5 with VARIABLES THAT WERE 90% CONFIDENT FROM THE FOURTH MODEL
+
+#building logistic model with the numerical variables
+log5 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing + movies + concerts + music + exphappy + attr2_1 + intel2_1, data = nums, family = "binomial")
+summary(log5)
+#variables to include for next model: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + movies + concerts + music + exphappy + attr2_1 + intel2_1
+
+#VARIABLES THAT WE TOOK OUT (stage 2)
+#clubbing
+
+```
+
+###Model 5
+
+```{r}
+
+#log model 6 with VARIABLES THAT WERE 90% CONFIDENT FROM THE FIFTH MODEL
+
+#building logistic model with the numerical variables
+log6 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + movies + concerts + music + exphappy + attr2_1 + intel2_1, data = nums, family = "binomial")
+summary(log6)
+#variables to include for next model: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + movies + concerts + music + exphappy + attr2_1 + intel2_1
+
+#ALL VARIABLES ARE NOW CONFIDENT AT THE 90% LEVEL
+#BONUS: ACTUALLY ALL THE VARIABLES ARE NOW 95% CONFIDENT AS WELL
+
+```
 
 
 
+#Possible Ideas
 
-
-
+* Logistic Regression with interactions
+  + Mixing up some of the characteristics
+  + Combining the interests and patterns (high interest in sports and sports)
+  + Mixing characteristics that seem to clash (like shopping and sports)
+* Have an RShiny that has data of person you want to match with, and allows you to change your characteristics of yourself to see if you match with that person
 
 
 
