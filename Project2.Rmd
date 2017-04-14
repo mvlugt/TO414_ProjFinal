@@ -15,7 +15,7 @@ output:
 
 ```{r, include = F}
 
-data = read.csv("sdclean.csv", header = T)
+data1 = read.csv("sdclean.csv", header = T)
 
 ```
 
@@ -25,10 +25,16 @@ data = read.csv("sdclean.csv", header = T)
 #who will match on this dataset
 
 #getting the numerical variables
-str(data)
-num = sapply(data, is.numeric)
-nums = data[,num]
-sample = nums[500,]
+str(data1)
+num = sapply(data1, is.numeric)
+nums = data1[,num]
+
+train1 = data1[1:5000,]
+test1 = data1[5001:6000,]
+
+train2 = data1[1:5000,]
+test2 = data1[5001:6000,]
+#tele_nn <- model.matrix(~ job + marital + education + default + housing + loan +  contact + month + day_of_week + poutcome + y, data1 = tele1)
 ```
 
 #Building the Logistic Model
@@ -39,7 +45,7 @@ sample = nums[500,]
 #log model 1 with ALL VARIABLES
 
 #building logistic model with the numerical variables
-log1 = glm(match ~ ., data = nums, family = "binomial")
+log1 = glm(match ~ ., data = train1, family = "binomial")
 summary(log1)
 #significant variable: gender + int_corr + age_o + samerace + race_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o + race + imprace + sports + exercise + art + gaming + clubbing + reading + tv + movies + concerts + music + shopping + yoga + exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1 + shar2_1
 #note all significant at 90% confidence interval
@@ -55,7 +61,7 @@ summary(log1)
 #log model 2 with VARIABLES THAT WERE 90% CONFIDENT FROM FIRST MODEL
 
 #building logistic model with the numerical variables
-log2 = glm(match ~ gender + int_corr + age_o + samerace + race_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o + race + imprace + sports + exercise + art + gaming + clubbing + reading + tv + movies + concerts + music + shopping + yoga + exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1 + shar2_1, data = nums, family = "binomial")
+log2 = glm(match ~ gender + int_corr + age_o + samerace + race_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o + race + imprace + sports + exercise + art + gaming + clubbing + reading + tv + movies + concerts + music + shopping + yoga + exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1 + shar2_1, data = train1, family = "binomial")
 summary(log2)
 #variables to include for next model: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing +  tv + movies + concerts + music + shopping +  exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1 
 
@@ -70,7 +76,7 @@ summary(log2)
 #log model 3 with VARIABLES THAT WERE 90% CONFIDENT FROM THE SECOND MODEL
 
 #building logistic model with the numerical variables
-log3 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing +  tv + movies + concerts + music + shopping +  exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1, data = nums, family = "binomial")
+log3 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing +  tv + movies + concerts + music + shopping +  exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1, data = train1, family = "binomial")
 summary(log3)
 #variables to include for next model: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing +  tv + movies + concerts + music + exphappy + attr2_1 + intel2_1
 
@@ -85,7 +91,7 @@ summary(log3)
 #log model 4 with VARIABLES THAT WERE 90% CONFIDENT FROM THE THIRD MODEL
 
 #building logistic model with the numerical variables
-log4 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing +  tv + movies + concerts + music + exphappy + attr2_1 + intel2_1, data = nums, family = "binomial")
+log4 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing +  tv + movies + concerts + music + exphappy + attr2_1 + intel2_1, data = train1, family = "binomial")
 summary(log4)
 #variables to include for next model: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing + movies + concerts + music + exphappy + attr2_1 + intel2_1
 
@@ -101,7 +107,7 @@ summary(log4)
 #log model 5 with VARIABLES THAT WERE 90% CONFIDENT FROM THE FOURTH MODEL
 
 #building logistic model with the numerical variables
-log5 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing + movies + concerts + music + exphappy + attr2_1 + intel2_1, data = nums, family = "binomial")
+log5 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing + movies + concerts + music + exphappy + attr2_1 + intel2_1, data = train1, family = "binomial")
 summary(log5)
 #variables to include for next model: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + movies + concerts + music + exphappy + attr2_1 + intel2_1
 
@@ -117,7 +123,7 @@ summary(log5)
 #log model 6 with VARIABLES THAT WERE 90% CONFIDENT FROM THE FIFTH MODEL
 
 #building logistic model with the numerical variables
-log6 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + movies + concerts + music + exphappy + attr2_1 + intel2_1, data = nums, family = "binomial")
+log6 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + movies + concerts + music + exphappy + attr2_1 + intel2_1, data = train1, family = "binomial")
 summary(log6)
 #variables to include for next model: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + movies + concerts + music + exphappy + attr2_1 + intel2_1
 
@@ -126,6 +132,148 @@ summary(log6)
 
 ```
 
+##Logistic Model Including non-numerical Values
+
+###Model 1
+
+```{r}
+
+#building logistic model with the numerical variables
+log_all1 = glm(match ~ ., data = train2, family = "binomial")
+summary(log_all1)
+#significant variable: gender + int_corr + age_o + samerace + race_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + race + goal + career_c + imprace + sports + exercise + art + gaming + clubbing + tv + theater + movies + concerts + yoga + exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1 + shar2_1
+#note all significant at 90% confidence interval
+
+```
+
+###Model 2
+
+```{r}
+
+#building logistic model with the numerical variables
+log_all3 = glm(match ~ gender + int_corr + age_o + samerace + race_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + race + goal + career_c + imprace + sports + exercise + art + gaming + clubbing + tv + theater + movies + concerts + yoga + exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1 + shar2_1, data = train2, family = "binomial")
+summary(log_all3)
+#significant variable: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + goal + career_c + imprace + exercise + gaming + clubbing + movies + concerts + exphappy + attr2_1 + sinc2_1 + intel2_1
+#note all significant at 90% confidence interval
+
+#VARIABLES THAT WE TOOK OUT
+#gender + samerace + race_o + race + sports + + art + tv + theater + yoga + fun2_1 + amb2_1 + shar2_1
+
+
+```
+
+###Model 3
+
+```{r}
+
+#building logistic model with the numerical variables
+log_all4 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + goal + career_c + imprace + exercise + gaming + clubbing + movies + concerts + exphappy + attr2_1 + sinc2_1 + intel2_1, data = train2, family = "binomial")
+summary(log_all4)
+#significant variable: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + goal + career_c + imprace + exercise + gaming + clubbing + movies + concerts + exphappy + attr2_1 + intel2_1
+#note all significant at 90% confidence interval
+
+#VARIABLES THAT WE TOOK OUT
+#sinc2_1
+
+
+```
+
+###Model 4
+
+```{r}
+
+#building logistic model with the numerical variables
+log_all5 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + goal + career_c + imprace + exercise + gaming + clubbing + movies + concerts + exphappy + attr2_1 + intel2_1, data = train2, family = "binomial")
+summary(log_all5)
+#significant variable: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + goal + career_c + imprace + exercise + gaming + movies + concerts + exphappy + attr2_1 + intel2_1
+#note all significant at 90% confidence interval
+
+#VARIABLES THAT WE TOOK OUT
+#clubbing
+
+
+```
+
+###Model 5
+
+```{r}
+
+#building logistic model with the numerical variables
+log_all6 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + goal + career_c + imprace + exercise + gaming + movies + concerts + exphappy + attr2_1 + intel2_1, data = train2, family = "binomial")
+summary(log_all6)
+#significant variable: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + career_c + imprace + exercise + gaming + movies + concerts + exphappy + attr2_1 + intel2_1
+#note all significant at 90% confidence interval
+
+#VARIABLES THAT WE TOOK OUT
+#goal
+
+
+```
+
+###Model 6
+
+```{r}
+
+#building logistic model with the numerical variables
+log_all7 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + career_c + imprace + exercise + gaming + movies + concerts + exphappy + attr2_1 + intel2_1, data = train2, family = "binomial")
+summary(log_all7)
+#significant variable: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + career_c + imprace + exercise + gaming + movies + concerts + exphappy + attr2_1 + intel2_1
+#note all significant at 90% confidence interval
+
+#NOTE THAT THE ONLY CAREER THAT IS 90% SIGNIFICANT IS A CAREER IN POLITICS AND UNDECIDED AND BOTH RESULT IN SERIOUS LOSS OF CHANCE IN GETTING MATCHED (lol)
+
+
+```
+
+##Final Logistic Models
+
+```{r}
+
+summary(log6)
+summary(log_all7)
+
+```
+
+###Predictions from Logistic Models (only numeric variables)
+
+```{r}
+
+#log6 = predict.model.log6
+#log_all7 = predict.model.log_all7
+
+prop.table(table(test1$match))
+
+# Predict the Match Probability for the Testing Dataset using the model developed on the training dataset
+#use survival.model2
+predict.model.log6 = predict(log6, newdata = test1, type = "response")
+predict.model.log6 = as.data.frame(predict.model.log6, na.rm = TRUE)
+predict.model.log6$predict.model <- as.numeric(predict.model.log6$predict.model)
+predict.model.log6$match <- ifelse(predict.model.log6$predict.model > 0.5, 1, 0)
+predict.model.log6$X <- test1$X
+predict.model.log6
+prop.table(table(predict.model.log6$match))
+
+```
+
+###Predictions from Logistic Models (all variables)
+
+```{r}
+
+#log6 = predict.model.log6
+#log_all7 = predict.model.log_all7
+prop.table(table(test2$match))
+
+# Predict the Match Probability for the Testing Dataset using the model developed on the training dataset
+#use survival.model2
+predict.model.log_all7 = predict(log_all7, newdata = test2, type = "response")
+predict.model.log_all7 = as.data.frame(predict.model.log_all7, na.rm = TRUE)
+predict.model.log_all7$predict.model <- as.numeric(predict.model.log_all7$predict.model)
+predict.model.log_all7$match <- ifelse(predict.model.log_all7$predict.model > 0.5, 1, 0)
+predict.model.log_all7$X <- test2$X
+predict.model.log_all7
+prop.table(table(predict.model.log_all7$match))
+
+```
 
 
 #Possible Ideas

@@ -228,7 +228,7 @@ div.tocify {
 <pre class="r"><code>#who will match on this dataset
 
 #getting the numerical variables
-str(data)</code></pre>
+str(data1)</code></pre>
 <pre><code>## 'data.frame':    6499 obs. of  69 variables:
 ##  $ X       : int  4330 4614 746 7532 4486 5701 7197 6809 1278 6412 ...
 ##  $ gender  : int  1 0 1 0 0 1 1 0 0 1 ...
@@ -299,9 +299,15 @@ str(data)</code></pre>
 ##  $ fun3_1  : int  7 8 6 8 6 8 6 9 5 4 ...
 ##  $ intel3_1: int  8 9 8 9 10 9 8 9 7 10 ...
 ##  $ amb3_1  : int  7 5 7 7 9 10 5 7 5 8 ...</code></pre>
-<pre class="r"><code>num = sapply(data, is.numeric)
-nums = data[,num]
-sample = nums[500,]</code></pre>
+<pre class="r"><code>num = sapply(data1, is.numeric)
+nums = data1[,num]
+
+train1 = data1[1:5000,]
+test1 = data1[5001:6000,]
+
+train2 = data1[1:5000,]
+test2 = data1[5001:6000,]
+#tele_nn &lt;- model.matrix(~ job + marital + education + default + housing + loan +  contact + month + day_of_week + poutcome + y, data1 = tele1)</code></pre>
 </div>
 </div>
 <div id="building-the-logistic-model" class="section level1">
@@ -311,92 +317,144 @@ sample = nums[500,]</code></pre>
 <pre class="r"><code>#log model 1 with ALL VARIABLES
 
 #building logistic model with the numerical variables
-log1 = glm(match ~ ., data = nums, family = &quot;binomial&quot;)
-summary(log1)</code></pre>
+log1 = glm(match ~ ., data = train1, family = &quot;binomial&quot;)</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred</code></pre>
+<pre class="r"><code>summary(log1)</code></pre>
 <pre><code>## 
 ## Call:
-## glm(formula = match ~ ., family = &quot;binomial&quot;, data = nums)
+## glm(formula = match ~ ., family = &quot;binomial&quot;, data = train1)
 ## 
 ## Deviance Residuals: 
-##      Min        1Q    Median        3Q       Max  
-## -2.33655  -0.44966  -0.00004  -0.00003   2.94646  
+##     Min       1Q   Median       3Q      Max  
+## -2.6543  -0.3592   0.0000   0.0000   3.0591  
 ## 
 ## Coefficients:
-##               Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -2.594e+01  2.761e+02  -0.094 0.925134    
-## X           -2.504e-05  2.071e-05  -1.209 0.226673    
-## gender       6.345e-01  1.462e-01   4.340 1.43e-05 ***
-## condtn      -9.634e-02  1.271e-01  -0.758 0.448652    
-## order        2.720e-03  8.322e-03   0.327 0.743818    
-## int_corr     3.620e-01  1.518e-01   2.385 0.017065 *  
-## samerace    -1.553e-01  9.347e-02  -1.661 0.096628 .  
-## age_o       -2.623e-02  1.247e-02  -2.103 0.035462 *  
-## race_o      -1.307e-01  3.520e-02  -3.712 0.000206 ***
-## pf_o_att    -1.518e-02  1.950e-02  -0.778 0.436288    
-## pf_o_sin    -4.145e-02  2.009e-02  -2.063 0.039118 *  
-## pf_o_int    -8.671e-03  2.037e-02  -0.426 0.670326    
-## pf_o_fun    -4.732e-03  2.029e-02  -0.233 0.815605    
-## pf_o_amb    -2.071e-02  1.956e-02  -1.059 0.289639    
-## pf_o_sha    -5.049e-02  1.995e-02  -2.531 0.011379 *  
-## dec_o        2.028e+01  2.760e+02   0.073 0.941427    
-## attr_o      -6.648e-02  3.688e-02  -1.803 0.071459 .  
-## sinc_o       4.898e-02  4.013e-02   1.220 0.222291    
-## intel_o      6.580e-02  5.047e-02   1.304 0.192323    
-## fun_o        9.779e-02  3.954e-02   2.473 0.013404 *  
-## amb_o       -6.068e-02  3.717e-02  -1.633 0.102565    
-## shar_o       4.185e-02  3.044e-02   1.375 0.169150    
-## like_o      -4.384e-02  4.856e-02  -0.903 0.366577    
-## prob_o       1.816e-01  2.694e-02   6.739 1.60e-11 ***
-## met_o       -8.683e-01  1.764e-01  -4.921 8.62e-07 ***
-## age         -3.110e-03  1.432e-02  -0.217 0.827989    
-## race         7.488e-02  3.885e-02   1.927 0.053929 .  
-## imprace     -3.076e-02  1.858e-02  -1.656 0.097716 .  
-## imprelig    -1.023e-02  1.829e-02  -0.559 0.576027    
-## sports      -4.335e-02  2.343e-02  -1.850 0.064259 .  
-## tvsports     8.786e-03  2.103e-02   0.418 0.676054    
-## exercise    -5.215e-02  2.105e-02  -2.477 0.013242 *  
-## dining      -3.736e-02  3.224e-02  -1.159 0.246561    
-## museums     -6.834e-02  4.728e-02  -1.446 0.148289    
-## art          8.860e-02  4.077e-02   2.173 0.029768 *  
-## hiking       3.295e-03  1.951e-02   0.169 0.865890    
-## gaming       5.356e-02  1.973e-02   2.715 0.006625 ** 
-## clubbing     3.552e-02  1.883e-02   1.886 0.059318 .  
-## reading      5.102e-02  2.475e-02   2.062 0.039232 *  
-## tv           4.269e-02  2.303e-02   1.853 0.063821 .  
-## theater      3.653e-02  2.786e-02   1.311 0.189713    
-## movies      -1.154e-01  3.242e-02  -3.559 0.000373 ***
-## concerts     8.669e-02  3.274e-02   2.648 0.008104 ** 
-## music       -6.911e-02  3.654e-02  -1.891 0.058596 .  
-## shopping    -3.945e-02  2.270e-02  -1.738 0.082233 .  
-## yoga         4.411e-02  1.794e-02   2.459 0.013948 *  
-## exphappy     9.799e-02  2.767e-02   3.541 0.000398 ***
-## attr1_1     -2.805e-02  2.389e-02  -1.174 0.240432    
-## sinc1_1     -1.035e-02  2.437e-02  -0.425 0.670926    
-## intel1_1    -1.010e-02  2.457e-02  -0.411 0.681075    
-## fun1_1      -6.256e-04  2.462e-02  -0.025 0.979726    
-## amb1_1      -2.065e-02  2.406e-02  -0.858 0.390729    
-## shar1_1     -9.283e-03  2.445e-02  -0.380 0.704188    
-## attr2_1      9.616e-02  2.764e-02   3.479 0.000504 ***
-## sinc2_1      8.858e-02  2.871e-02   3.085 0.002033 ** 
-## intel2_1     1.110e-01  2.835e-02   3.914 9.06e-05 ***
-## fun2_1       8.309e-02  2.788e-02   2.980 0.002885 ** 
-## amb2_1       8.693e-02  2.798e-02   3.107 0.001889 ** 
-## shar2_1      7.902e-02  2.818e-02   2.804 0.005048 ** 
-## attr3_1      3.951e-02  4.478e-02   0.882 0.377554    
-## sinc3_1     -8.947e-03  3.719e-02  -0.241 0.809892    
-## fun3_1      -1.993e-02  3.915e-02  -0.509 0.610711    
-## intel3_1     3.020e-02  5.133e-02   0.588 0.556258    
-## amb3_1       7.830e-03  3.227e-02   0.243 0.808272    
+##                              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)                 5.999e+12  1.604e+13   0.374 0.708391    
+## X                          -2.458e-05  2.712e-05  -0.906 0.364913    
+## gender                      6.768e-01  1.904e-01   3.554 0.000380 ***
+## condtn                     -4.808e-02  1.555e-01  -0.309 0.757225    
+## order                       2.669e-03  9.853e-03   0.271 0.786512    
+## int_corr                    4.587e-01  1.825e-01   2.513 0.011968 *  
+## samerace                   -1.068e-01  1.109e-01  -0.963 0.335479    
+## age_o                      -2.466e-02  1.526e-02  -1.616 0.106187    
+## race_o                     -1.698e-01  4.236e-02  -4.007 6.14e-05 ***
+## pf_o_att                   -2.491e-02  2.274e-02  -1.095 0.273423    
+## pf_o_sin                   -5.075e-02  2.342e-02  -2.166 0.030281 *  
+## pf_o_int                   -2.030e-02  2.381e-02  -0.853 0.393874    
+## pf_o_fun                   -1.642e-02  2.381e-02  -0.689 0.490619    
+## pf_o_amb                   -2.622e-02  2.247e-02  -1.166 0.243430    
+## pf_o_sha                   -6.181e-02  2.321e-02  -2.663 0.007752 ** 
+## dec_o                       4.547e+01  5.861e+03   0.008 0.993810    
+## attr_o                     -8.545e-02  4.412e-02  -1.937 0.052763 .  
+## sinc_o                      5.043e-02  4.766e-02   1.058 0.290003    
+## intel_o                     6.228e-02  6.069e-02   1.026 0.304818    
+## fun_o                       1.188e-01  4.758e-02   2.498 0.012501 *  
+## amb_o                      -7.402e-02  4.496e-02  -1.646 0.099733 .  
+## shar_o                      3.817e-02  3.602e-02   1.060 0.289207    
+## like_o                     -5.488e-02  5.915e-02  -0.928 0.353543    
+## prob_o                      1.997e-01  3.252e-02   6.143 8.12e-10 ***
+## met_o                      -9.741e-01  2.207e-01  -4.413 1.02e-05 ***
+## age                        -2.674e-02  1.916e-02  -1.396 0.162784    
+## field_cdBio                -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdBusiness           -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdEducation          -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdEngineering        -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdEnglish            -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdFilm               -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdFineArts           -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdHistory            -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdLang               -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdLaw                -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdMath               -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdMedSci             -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdOther              -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdPoliSci            -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdSocialWork         -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdSocScie/Psych      -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdUndergrad          -5.999e+12  1.604e+13  -0.374 0.708391    
+## race                        9.115e-02  4.723e-02   1.930 0.053596 .  
+## imprace                    -3.508e-02  2.359e-02  -1.487 0.137042    
+## imprelig                   -1.649e-02  2.343e-02  -0.704 0.481474    
+## goalGetADate               -1.063e-01  2.331e-01  -0.456 0.648192    
+## goalMeetNewPpl              1.625e-01  1.347e-01   1.206 0.227722    
+## goalOther                  -3.279e-01  2.851e-01  -1.150 0.250128    
+## goalSRSRelationship         8.525e-01  3.247e-01   2.626 0.008645 ** 
+## goalToSayIDidIt            -4.534e-02  2.476e-01  -0.183 0.854720    
+## date1/Week                 -1.912e-01  2.288e-01  -0.836 0.403405    
+## date2/Month                 6.357e-02  1.767e-01   0.360 0.719003    
+## date2/Week                  3.574e-01  3.162e-01   1.130 0.258401    
+## dateAlmostNever             1.550e-02  2.008e-01   0.077 0.938477    
+## dateSVRL/Week              -1.904e-01  5.013e-01  -0.380 0.704088    
+## dateSVRL/Year               3.100e-02  1.730e-01   0.179 0.857819    
+## go_out1/Week                6.592e-01  5.040e-01   1.308 0.190837    
+## go_out2/Month               7.620e-01  5.660e-01   1.346 0.178187    
+## go_out2/Week                5.673e-01  4.990e-01   1.137 0.255631    
+## go_outAlmostNever           2.082e+01  5.196e+03   0.004 0.996803    
+## go_outSVRL/Week             7.846e-01  5.013e-01   1.565 0.117568    
+## go_outSVRL/Year             2.545e-01  8.414e-01   0.302 0.762299    
+## career_cArchitecture       -5.999e+12  1.604e+13  -0.374 0.708391    
+## career_cBanking/Consulting  3.633e-01  2.014e-01   1.804 0.071190 .  
+## career_cDocMed             -7.713e-01  3.442e-01  -2.241 0.025020 *  
+## career_cEngineer            5.441e-01  3.960e-01   1.374 0.169496    
+## career_cEntertainment       2.565e-01  3.105e-01   0.826 0.408663    
+## career_cIntlAffairs         1.597e-01  2.889e-01   0.553 0.580484    
+## career_cJournalism          7.393e-01  7.492e-01   0.987 0.323729    
+## career_cLawyer             -2.882e-01  4.384e-01  -0.657 0.510923    
+## career_cOther               3.520e-02  7.776e-01   0.045 0.963895    
+## career_cPolitics           -1.842e+00  7.775e-01  -2.369 0.017821 *  
+## career_cProSports           2.206e+00  1.466e+00   1.504 0.132453    
+## career_cPsychologist        4.938e-01  4.228e-01   1.168 0.242804    
+## career_cRealEstate          7.607e-02  1.603e+00   0.047 0.962142    
+## career_cSocialWork          6.691e-01  4.898e-01   1.366 0.171962    
+## career_cSpeechPath          3.777e-01  1.339e+00   0.282 0.777870    
+## career_cUndecided          -4.775e-01  2.936e-01  -1.626 0.103852    
+## sports                     -3.051e-02  2.961e-02  -1.030 0.302840    
+## tvsports                    3.935e-03  2.656e-02   0.148 0.882202    
+## exercise                   -6.083e-02  2.638e-02  -2.306 0.021116 *  
+## dining                     -3.058e-02  3.958e-02  -0.773 0.439727    
+## museums                    -8.123e-02  5.890e-02  -1.379 0.167869    
+## art                         6.091e-02  5.030e-02   1.211 0.225921    
+## hiking                      5.274e-03  2.444e-02   0.216 0.829130    
+## gaming                      6.792e-02  2.504e-02   2.712 0.006680 ** 
+## clubbing                    4.116e-02  2.409e-02   1.708 0.087566 .  
+## reading                     3.120e-02  3.128e-02   0.998 0.318465    
+## tv                          6.125e-02  2.962e-02   2.068 0.038649 *  
+## theater                     7.559e-02  3.614e-02   2.091 0.036485 *  
+## movies                     -1.466e-01  4.302e-02  -3.407 0.000657 ***
+## concerts                    8.431e-02  4.065e-02   2.074 0.038080 *  
+## music                      -1.921e-02  4.634e-02  -0.415 0.678498    
+## shopping                   -1.460e-02  2.894e-02  -0.504 0.613937    
+## yoga                        3.728e-02  2.254e-02   1.654 0.098156 .  
+## exphappy                    8.223e-02  3.671e-02   2.240 0.025072 *  
+## attr1_1                    -2.791e-02  2.827e-02  -0.988 0.323388    
+## sinc1_1                    -1.188e-02  2.887e-02  -0.412 0.680554    
+## intel1_1                   -4.581e-03  2.929e-02  -0.156 0.875714    
+## fun1_1                      7.861e-03  2.960e-02   0.266 0.790566    
+## amb1_1                     -2.306e-02  2.840e-02  -0.812 0.416679    
+## shar1_1                    -1.195e-02  2.943e-02  -0.406 0.684705    
+## attr2_1                     1.136e-01  3.488e-02   3.257 0.001127 ** 
+## sinc2_1                     1.150e-01  3.637e-02   3.161 0.001572 ** 
+## intel2_1                    1.262e-01  3.558e-02   3.548 0.000389 ***
+## fun2_1                      9.656e-02  3.525e-02   2.739 0.006155 ** 
+## amb2_1                      1.124e-01  3.522e-02   3.190 0.001422 ** 
+## shar2_1                     9.152e-02  3.580e-02   2.557 0.010573 *  
+## attr3_1                     9.101e-02  5.700e-02   1.597 0.110365    
+## sinc3_1                    -2.776e-02  4.561e-02  -0.609 0.542685    
+## fun3_1                     -6.781e-02  5.216e-02  -1.300 0.193567    
+## intel3_1                    2.606e-02  6.536e-02   0.399 0.690102    
+## amb3_1                     -4.745e-02  4.084e-02  -1.162 0.245363    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 5970.3  on 6498  degrees of freedom
-## Residual deviance: 3314.5  on 6435  degrees of freedom
-## AIC: 3442.5
+##     Null deviance: 4568.4  on 4999  degrees of freedom
+## Residual deviance: 2430.5  on 4886  degrees of freedom
+## AIC: 2658.5
 ## 
-## Number of Fisher Scoring iterations: 19</code></pre>
+## Number of Fisher Scoring iterations: 25</code></pre>
 <pre class="r"><code>#significant variable: gender + int_corr + age_o + samerace + race_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o + race + imprace + sports + exercise + art + gaming + clubbing + reading + tv + movies + concerts + music + shopping + yoga + exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1 + shar2_1
 #note all significant at 90% confidence interval</code></pre>
 </div>
@@ -407,7 +465,7 @@ summary(log1)</code></pre>
 <pre class="r"><code>#log model 2 with VARIABLES THAT WERE 90% CONFIDENT FROM FIRST MODEL
 
 #building logistic model with the numerical variables
-log2 = glm(match ~ gender + int_corr + age_o + samerace + race_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o + race + imprace + sports + exercise + art + gaming + clubbing + reading + tv + movies + concerts + music + shopping + yoga + exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1 + shar2_1, data = nums, family = &quot;binomial&quot;)
+log2 = glm(match ~ gender + int_corr + age_o + samerace + race_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o + race + imprace + sports + exercise + art + gaming + clubbing + reading + tv + movies + concerts + music + shopping + yoga + exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1 + shar2_1, data = train1, family = &quot;binomial&quot;)
 summary(log2)</code></pre>
 <pre><code>## 
 ## Call:
@@ -416,55 +474,55 @@ summary(log2)</code></pre>
 ##     met_o + race + imprace + sports + exercise + art + gaming + 
 ##     clubbing + reading + tv + movies + concerts + music + shopping + 
 ##     yoga + exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + 
-##     amb2_1 + shar2_1, family = &quot;binomial&quot;, data = nums)
+##     amb2_1 + shar2_1, family = &quot;binomial&quot;, data = train1)
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -2.0975  -0.6133  -0.4113  -0.2279   3.0589  
+## -2.1579  -0.6141  -0.4118  -0.2291   2.9887  
 ## 
 ## Coefficients:
-##              Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -8.645054   2.224440  -3.886 0.000102 ***
-## gender       0.026717   0.096560   0.277 0.782016    
-## int_corr     0.299465   0.126564   2.366 0.017976 *  
-## age_o       -0.025874   0.011064  -2.339 0.019353 *  
-## samerace    -0.094663   0.080712  -1.173 0.240855    
-## race_o      -0.028898   0.030065  -0.961 0.336466    
-## pf_o_sin    -0.010193   0.005254  -1.940 0.052357 .  
-## pf_o_sha    -0.011698   0.005843  -2.002 0.045281 *  
-## attr_o       0.255523   0.025251  10.119  &lt; 2e-16 ***
-## fun_o        0.215224   0.026589   8.094 5.76e-16 ***
-## prob_o       0.241038   0.019552  12.328  &lt; 2e-16 ***
-## met_o       -0.702821   0.142036  -4.948 7.49e-07 ***
-## race         0.015899   0.031704   0.501 0.616031    
-## imprace     -0.036501   0.014249  -2.562 0.010416 *  
-## sports      -0.017275   0.016615  -1.040 0.298461    
-## exercise    -0.046498   0.017093  -2.720 0.006523 ** 
-## art          0.037508   0.019822   1.892 0.058454 .  
-## gaming       0.029409   0.015594   1.886 0.059309 .  
-## clubbing     0.030467   0.015595   1.954 0.050743 .  
-## reading      0.028293   0.019940   1.419 0.155927    
-## tv           0.033529   0.018339   1.828 0.067499 .  
-## movies      -0.073457   0.025406  -2.891 0.003835 ** 
-## concerts     0.070680   0.025451   2.777 0.005485 ** 
-## music       -0.055306   0.028245  -1.958 0.050218 .  
-## shopping    -0.032001   0.017462  -1.833 0.066854 .  
-## yoga         0.013967   0.014631   0.955 0.339793    
-## exphappy     0.066088   0.022561   2.929 0.003397 ** 
-## attr2_1      0.048397   0.021661   2.234 0.025461 *  
-## sinc2_1      0.046235   0.022553   2.050 0.040361 *  
-## intel2_1     0.067501   0.022503   3.000 0.002703 ** 
-## fun2_1       0.040286   0.022068   1.826 0.067918 .  
-## amb2_1       0.043941   0.021848   2.011 0.044299 *  
-## shar2_1      0.034241   0.022178   1.544 0.122610    
+##               Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) -10.594976   2.565563  -4.130 3.63e-05 ***
+## gender        0.058745   0.110429   0.532  0.59475    
+## int_corr      0.311470   0.144915   2.149  0.03161 *  
+## age_o        -0.028075   0.012684  -2.213  0.02687 *  
+## samerace     -0.015615   0.091304  -0.171  0.86420    
+## race_o       -0.048524   0.034431  -1.409  0.15874    
+## pf_o_sin     -0.010668   0.006004  -1.777  0.07557 .  
+## pf_o_sha     -0.009981   0.006625  -1.507  0.13189    
+## attr_o        0.245466   0.028784   8.528  &lt; 2e-16 ***
+## fun_o         0.222913   0.030347   7.345 2.05e-13 ***
+## prob_o        0.238733   0.022341  10.686  &lt; 2e-16 ***
+## met_o        -0.654234   0.164780  -3.970 7.18e-05 ***
+## race          0.040207   0.036080   1.114  0.26512    
+## imprace      -0.033908   0.016321  -2.078  0.03775 *  
+## sports       -0.006782   0.019027  -0.356  0.72152    
+## exercise     -0.049817   0.019567  -2.546  0.01090 *  
+## art           0.017414   0.022342   0.779  0.43572    
+## gaming        0.033198   0.017768   1.868  0.06170 .  
+## clubbing      0.027656   0.017837   1.550  0.12103    
+## reading       0.030564   0.022722   1.345  0.17858    
+## tv            0.034345   0.020976   1.637  0.10156    
+## movies       -0.069864   0.029374  -2.378  0.01738 *  
+## concerts      0.086950   0.029165   2.981  0.00287 ** 
+## music        -0.048571   0.032623  -1.489  0.13652    
+## shopping     -0.009951   0.020104  -0.495  0.62062    
+## yoga          0.010009   0.016665   0.601  0.54811    
+## exphappy      0.045909   0.025668   1.789  0.07368 .  
+## attr2_1       0.064745   0.024967   2.593  0.00951 ** 
+## sinc2_1       0.066934   0.025960   2.578  0.00993 ** 
+## intel2_1      0.081122   0.025913   3.131  0.00174 ** 
+## fun2_1        0.059886   0.025436   2.354  0.01856 *  
+## amb2_1        0.063394   0.025146   2.521  0.01170 *  
+## shar2_1       0.049835   0.025549   1.951  0.05111 .  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 5970.3  on 6498  degrees of freedom
-## Residual deviance: 4989.0  on 6466  degrees of freedom
-## AIC: 5055
+##     Null deviance: 4568.4  on 4999  degrees of freedom
+## Residual deviance: 3836.7  on 4967  degrees of freedom
+## AIC: 3902.7
 ## 
 ## Number of Fisher Scoring iterations: 5</code></pre>
 <pre class="r"><code>#variables to include for next model: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing +  tv + movies + concerts + music + shopping +  exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1 
@@ -477,7 +535,7 @@ summary(log2)</code></pre>
 <pre class="r"><code>#log model 3 with VARIABLES THAT WERE 90% CONFIDENT FROM THE SECOND MODEL
 
 #building logistic model with the numerical variables
-log3 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing +  tv + movies + concerts + music + shopping +  exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1, data = nums, family = &quot;binomial&quot;)
+log3 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing +  tv + movies + concerts + music + shopping +  exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1, data = train1, family = &quot;binomial&quot;)
 summary(log3)</code></pre>
 <pre><code>## 
 ## Call:
@@ -485,47 +543,47 @@ summary(log3)</code></pre>
 ##     attr_o + fun_o + prob_o + met_o + imprace + exercise + art + 
 ##     gaming + clubbing + tv + movies + concerts + music + shopping + 
 ##     exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1, 
-##     family = &quot;binomial&quot;, data = nums)
+##     family = &quot;binomial&quot;, data = train1)
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -2.1159  -0.6186  -0.4136  -0.2279   3.0485  
+## -2.1642  -0.6145  -0.4169  -0.2324   2.9554  
 ## 
 ## Coefficients:
 ##              Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -5.284610   0.764055  -6.917 4.63e-12 ***
-## int_corr     0.314481   0.125873   2.498 0.012476 *  
-## age_o       -0.024771   0.010938  -2.265 0.023524 *  
-## pf_o_sin    -0.010818   0.005175  -2.090 0.036578 *  
-## pf_o_sha    -0.011799   0.005793  -2.037 0.041664 *  
-## attr_o       0.249918   0.024967  10.010  &lt; 2e-16 ***
-## fun_o        0.216084   0.026542   8.141 3.91e-16 ***
-## prob_o       0.240531   0.019476  12.350  &lt; 2e-16 ***
-## met_o       -0.697634   0.141788  -4.920 8.64e-07 ***
-## imprace     -0.043567   0.013773  -3.163 0.001561 ** 
-## exercise    -0.051660   0.015197  -3.399 0.000675 ***
-## art          0.048237   0.018949   2.546 0.010907 *  
-## gaming       0.029085   0.015216   1.911 0.055951 .  
-## clubbing     0.027701   0.015389   1.800 0.071855 .  
-## tv           0.037760   0.018108   2.085 0.037043 *  
-## movies      -0.068640   0.025193  -2.725 0.006439 ** 
-## concerts     0.071606   0.025041   2.860 0.004242 ** 
-## music       -0.054500   0.028079  -1.941 0.052262 .  
-## shopping    -0.027335   0.016758  -1.631 0.102842    
-## exphappy     0.061311   0.021834   2.808 0.004985 ** 
-## attr2_1      0.015296   0.005920   2.584 0.009770 ** 
-## sinc2_1      0.012985   0.008863   1.465 0.142901    
-## intel2_1     0.034716   0.008566   4.053 5.07e-05 ***
-## fun2_1       0.007445   0.008012   0.929 0.352772    
-## amb2_1       0.011013   0.008110   1.358 0.174485    
+## (Intercept) -5.658852   0.877691  -6.447 1.14e-10 ***
+## int_corr     0.333193   0.144193   2.311 0.020847 *  
+## age_o       -0.027903   0.012576  -2.219 0.026507 *  
+## pf_o_sin    -0.012000   0.005906  -2.032 0.042169 *  
+## pf_o_sha    -0.010702   0.006554  -1.633 0.102496    
+## attr_o       0.239696   0.028420   8.434  &lt; 2e-16 ***
+## fun_o        0.224127   0.030272   7.404 1.32e-13 ***
+## prob_o       0.239697   0.022262  10.767  &lt; 2e-16 ***
+## met_o       -0.657061   0.164458  -3.995 6.46e-05 ***
+## imprace     -0.041675   0.015802  -2.637 0.008355 ** 
+## exercise    -0.051109   0.017258  -2.961 0.003062 ** 
+## art          0.027247   0.021324   1.278 0.201342    
+## gaming       0.034112   0.017363   1.965 0.049451 *  
+## clubbing     0.023417   0.017629   1.328 0.184077    
+## tv           0.039645   0.020701   1.915 0.055478 .  
+## movies      -0.064448   0.029110  -2.214 0.026835 *  
+## concerts     0.085882   0.028705   2.992 0.002773 ** 
+## music       -0.047966   0.032358  -1.482 0.138245    
+## shopping    -0.007867   0.019229  -0.409 0.682464    
+## exphappy     0.046800   0.024806   1.887 0.059209 .  
+## attr2_1      0.017231   0.006776   2.543 0.010997 *  
+## sinc2_1      0.020159   0.010033   2.009 0.044511 *  
+## intel2_1     0.034694   0.009807   3.538 0.000404 ***
+## fun2_1       0.012622   0.009133   1.382 0.166977    
+## amb2_1       0.017085   0.009377   1.822 0.068452 .  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 5970.3  on 6498  degrees of freedom
-## Residual deviance: 4998.4  on 6474  degrees of freedom
-## AIC: 5048.4
+##     Null deviance: 4568.4  on 4999  degrees of freedom
+## Residual deviance: 3846.0  on 4975  degrees of freedom
+## AIC: 3896
 ## 
 ## Number of Fisher Scoring iterations: 5</code></pre>
 <pre class="r"><code>#variables to include for next model: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing +  tv + movies + concerts + music + exphappy + attr2_1 + intel2_1
@@ -538,50 +596,50 @@ summary(log3)</code></pre>
 <pre class="r"><code>#log model 4 with VARIABLES THAT WERE 90% CONFIDENT FROM THE THIRD MODEL
 
 #building logistic model with the numerical variables
-log4 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing +  tv + movies + concerts + music + exphappy + attr2_1 + intel2_1, data = nums, family = &quot;binomial&quot;)
+log4 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing +  tv + movies + concerts + music + exphappy + attr2_1 + intel2_1, data = train1, family = &quot;binomial&quot;)
 summary(log4)</code></pre>
 <pre><code>## 
 ## Call:
 ## glm(formula = match ~ int_corr + age_o + pf_o_sin + pf_o_sha + 
 ##     attr_o + fun_o + prob_o + met_o + imprace + exercise + art + 
 ##     gaming + clubbing + tv + movies + concerts + music + exphappy + 
-##     attr2_1 + intel2_1, family = &quot;binomial&quot;, data = nums)
+##     attr2_1 + intel2_1, family = &quot;binomial&quot;, data = train1)
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -2.0647  -0.6160  -0.4139  -0.2265   3.0457  
+## -2.1010  -0.6154  -0.4179  -0.2313   2.9309  
 ## 
 ## Coefficients:
 ##              Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -4.426766   0.550117  -8.047 8.49e-16 ***
-## int_corr     0.309900   0.125596   2.467 0.013609 *  
-## age_o       -0.026064   0.010933  -2.384 0.017126 *  
-## pf_o_sin    -0.010407   0.005167  -2.014 0.044000 *  
-## pf_o_sha    -0.011604   0.005779  -2.008 0.044660 *  
-## attr_o       0.246252   0.024868   9.902  &lt; 2e-16 ***
-## fun_o        0.216482   0.026515   8.164 3.23e-16 ***
-## prob_o       0.241729   0.019479  12.410  &lt; 2e-16 ***
-## met_o       -0.694802   0.141790  -4.900 9.57e-07 ***
-## imprace     -0.046360   0.013711  -3.381 0.000722 ***
-## exercise    -0.053931   0.015131  -3.564 0.000365 ***
-## art          0.041998   0.018644   2.253 0.024285 *  
-## gaming       0.030419   0.015135   2.010 0.044444 *  
-## clubbing     0.025347   0.015112   1.677 0.093489 .  
-## tv           0.026636   0.016554   1.609 0.107609    
-## movies      -0.069309   0.025154  -2.755 0.005863 ** 
-## concerts     0.069032   0.024941   2.768 0.005644 ** 
-## music       -0.057818   0.027956  -2.068 0.038621 *  
-## exphappy     0.061748   0.021611   2.857 0.004274 ** 
-## attr2_1      0.006557   0.002935   2.234 0.025484 *  
-## intel2_1     0.028259   0.007307   3.867 0.000110 ***
+## (Intercept) -4.376952   0.630675  -6.940 3.92e-12 ***
+## int_corr     0.324831   0.143827   2.258  0.02392 *  
+## age_o       -0.029131   0.012560  -2.319  0.02038 *  
+## pf_o_sin    -0.011763   0.005891  -1.997  0.04584 *  
+## pf_o_sha    -0.010487   0.006534  -1.605  0.10848    
+## attr_o       0.236876   0.028272   8.379  &lt; 2e-16 ***
+## fun_o        0.224706   0.030216   7.437 1.03e-13 ***
+## prob_o       0.239629   0.022261  10.765  &lt; 2e-16 ***
+## met_o       -0.646245   0.164228  -3.935 8.32e-05 ***
+## imprace     -0.043962   0.015741  -2.793  0.00522 ** 
+## exercise    -0.052058   0.017171  -3.032  0.00243 ** 
+## art          0.023213   0.020963   1.107  0.26815    
+## gaming       0.035921   0.017294   2.077  0.03779 *  
+## clubbing     0.024252   0.017324   1.400  0.16154    
+## tv           0.037183   0.018897   1.968  0.04910 *  
+## movies      -0.066260   0.029032  -2.282  0.02247 *  
+## concerts     0.084054   0.028634   2.935  0.00333 ** 
+## music       -0.049935   0.032182  -1.552  0.12075    
+## exphappy     0.050436   0.024589   2.051  0.04025 *  
+## attr2_1      0.004363   0.003340   1.307  0.19136    
+## intel2_1     0.024333   0.008246   2.951  0.00317 ** 
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 5970.3  on 6498  degrees of freedom
-## Residual deviance: 5004.0  on 6478  degrees of freedom
-## AIC: 5046
+##     Null deviance: 4568.4  on 4999  degrees of freedom
+## Residual deviance: 3851.2  on 4979  degrees of freedom
+## AIC: 3893.2
 ## 
 ## Number of Fisher Scoring iterations: 5</code></pre>
 <pre class="r"><code>#variables to include for next model: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing + movies + concerts + music + exphappy + attr2_1 + intel2_1
@@ -594,49 +652,49 @@ summary(log4)</code></pre>
 <pre class="r"><code>#log model 5 with VARIABLES THAT WERE 90% CONFIDENT FROM THE FOURTH MODEL
 
 #building logistic model with the numerical variables
-log5 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing + movies + concerts + music + exphappy + attr2_1 + intel2_1, data = nums, family = &quot;binomial&quot;)
+log5 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing + movies + concerts + music + exphappy + attr2_1 + intel2_1, data = train1, family = &quot;binomial&quot;)
 summary(log5)</code></pre>
 <pre><code>## 
 ## Call:
 ## glm(formula = match ~ int_corr + age_o + pf_o_sin + pf_o_sha + 
 ##     attr_o + fun_o + prob_o + met_o + imprace + exercise + art + 
 ##     gaming + clubbing + movies + concerts + music + exphappy + 
-##     attr2_1 + intel2_1, family = &quot;binomial&quot;, data = nums)
+##     attr2_1 + intel2_1, family = &quot;binomial&quot;, data = train1)
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -2.0670  -0.6178  -0.4150  -0.2273   3.0264  
+## -2.1053  -0.6152  -0.4188  -0.2318   2.9325  
 ## 
 ## Coefficients:
 ##              Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -4.397994   0.549680  -8.001 1.23e-15 ***
-## int_corr     0.280662   0.124231   2.259 0.023871 *  
-## age_o       -0.025621   0.010928  -2.345 0.019052 *  
-## pf_o_sin    -0.010758   0.005164  -2.083 0.037223 *  
-## pf_o_sha    -0.011852   0.005781  -2.050 0.040348 *  
-## attr_o       0.244490   0.024837   9.844  &lt; 2e-16 ***
-## fun_o        0.217025   0.026507   8.188 2.67e-16 ***
-## prob_o       0.241336   0.019459  12.402  &lt; 2e-16 ***
-## met_o       -0.693770   0.141758  -4.894 9.88e-07 ***
-## imprace     -0.040019   0.013127  -3.049 0.002299 ** 
-## exercise    -0.053800   0.015122  -3.558 0.000374 ***
-## art          0.041361   0.018655   2.217 0.026611 *  
-## gaming       0.034884   0.014887   2.343 0.019120 *  
-## clubbing     0.024589   0.015093   1.629 0.103281    
-## movies      -0.054760   0.023484  -2.332 0.019709 *  
-## concerts     0.066745   0.024926   2.678 0.007412 ** 
-## music       -0.056038   0.027894  -2.009 0.044539 *  
-## exphappy     0.059400   0.021537   2.758 0.005815 ** 
-## attr2_1      0.006501   0.002936   2.214 0.026797 *  
-## intel2_1     0.027685   0.007284   3.801 0.000144 ***
+## (Intercept) -4.336028   0.629978  -6.883 5.87e-12 ***
+## int_corr     0.282975   0.142181   1.990  0.04656 *  
+## age_o       -0.028542   0.012556  -2.273  0.02302 *  
+## pf_o_sin    -0.012194   0.005888  -2.071  0.03837 *  
+## pf_o_sha    -0.010730   0.006538  -1.641  0.10076    
+## attr_o       0.234149   0.028221   8.297  &lt; 2e-16 ***
+## fun_o        0.225316   0.030196   7.462 8.54e-14 ***
+## prob_o       0.239438   0.022231  10.770  &lt; 2e-16 ***
+## met_o       -0.647087   0.164124  -3.943 8.06e-05 ***
+## imprace     -0.034937   0.015049  -2.322  0.02026 *  
+## exercise    -0.052046   0.017155  -3.034  0.00241 ** 
+## art          0.022195   0.020978   1.058  0.29005    
+## gaming       0.041963   0.017033   2.464  0.01375 *  
+## clubbing     0.023359   0.017297   1.350  0.17688    
+## movies      -0.045505   0.027069  -1.681  0.09275 .  
+## concerts     0.080645   0.028624   2.817  0.00484 ** 
+## music       -0.047622   0.032087  -1.484  0.13776    
+## exphappy     0.047528   0.024503   1.940  0.05242 .  
+## attr2_1      0.004355   0.003340   1.304  0.19236    
+## intel2_1     0.023531   0.008211   2.866  0.00416 ** 
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 5970.3  on 6498  degrees of freedom
-## Residual deviance: 5006.6  on 6479  degrees of freedom
-## AIC: 5046.6
+##     Null deviance: 4568.4  on 4999  degrees of freedom
+## Residual deviance: 3855.1  on 4980  degrees of freedom
+## AIC: 3895.1
 ## 
 ## Number of Fisher Scoring iterations: 5</code></pre>
 <pre class="r"><code>#variables to include for next model: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + movies + concerts + music + exphappy + attr2_1 + intel2_1
@@ -649,54 +707,2729 @@ summary(log5)</code></pre>
 <pre class="r"><code>#log model 6 with VARIABLES THAT WERE 90% CONFIDENT FROM THE FIFTH MODEL
 
 #building logistic model with the numerical variables
-log6 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + movies + concerts + music + exphappy + attr2_1 + intel2_1, data = nums, family = &quot;binomial&quot;)
+log6 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + movies + concerts + music + exphappy + attr2_1 + intel2_1, data = train1, family = &quot;binomial&quot;)
 summary(log6)</code></pre>
 <pre><code>## 
 ## Call:
 ## glm(formula = match ~ int_corr + age_o + pf_o_sin + pf_o_sha + 
 ##     attr_o + fun_o + prob_o + met_o + imprace + exercise + art + 
 ##     gaming + movies + concerts + music + exphappy + attr2_1 + 
-##     intel2_1, family = &quot;binomial&quot;, data = nums)
+##     intel2_1, family = &quot;binomial&quot;, data = train1)
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -2.0686  -0.6177  -0.4161  -0.2276   3.0568  
+## -2.1080  -0.6147  -0.4207  -0.2314   2.9397  
 ## 
 ## Coefficients:
 ##              Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -4.320478   0.546875  -7.900 2.78e-15 ***
-## int_corr     0.272753   0.124150   2.197 0.028022 *  
-## age_o       -0.025917   0.010926  -2.372 0.017694 *  
-## pf_o_sin    -0.011009   0.005158  -2.134 0.032832 *  
-## pf_o_sha    -0.011563   0.005779  -2.001 0.045422 *  
-## attr_o       0.246374   0.024805   9.932  &lt; 2e-16 ***
-## fun_o        0.218498   0.026479   8.252  &lt; 2e-16 ***
-## prob_o       0.240987   0.019462  12.383  &lt; 2e-16 ***
-## met_o       -0.697662   0.141699  -4.924 8.50e-07 ***
-## imprace     -0.041833   0.013071  -3.200 0.001373 ** 
-## exercise    -0.053313   0.015090  -3.533 0.000411 ***
-## art          0.043750   0.018596   2.353 0.018639 *  
-## gaming       0.039463   0.014600   2.703 0.006873 ** 
-## movies      -0.052672   0.023435  -2.248 0.024601 *  
-## concerts     0.066839   0.024877   2.687 0.007214 ** 
-## music       -0.056166   0.027860  -2.016 0.043800 *  
-## exphappy     0.062149   0.021495   2.891 0.003836 ** 
-## attr2_1      0.006677   0.002928   2.280 0.022581 *  
-## intel2_1     0.027481   0.007265   3.783 0.000155 ***
+## (Intercept) -4.262968   0.626929  -6.800 1.05e-11 ***
+## int_corr     0.274418   0.142057   1.932  0.05339 .  
+## age_o       -0.028943   0.012554  -2.306  0.02114 *  
+## pf_o_sin    -0.012412   0.005882  -2.110  0.03485 *  
+## pf_o_sha    -0.010477   0.006537  -1.603  0.10901    
+## attr_o       0.235766   0.028198   8.361  &lt; 2e-16 ***
+## fun_o        0.226783   0.030179   7.515 5.71e-14 ***
+## prob_o       0.239499   0.022238  10.770  &lt; 2e-16 ***
+## met_o       -0.649693   0.164135  -3.958 7.55e-05 ***
+## imprace     -0.036928   0.014971  -2.467  0.01364 *  
+## exercise    -0.051537   0.017117  -3.011  0.00261 ** 
+## art          0.024064   0.020928   1.150  0.25019    
+## gaming       0.046310   0.016707   2.772  0.00557 ** 
+## movies      -0.043379   0.027004  -1.606  0.10819    
+## concerts     0.081209   0.028569   2.843  0.00448 ** 
+## music       -0.047821   0.032051  -1.492  0.13570    
+## exphappy     0.050338   0.024436   2.060  0.03940 *  
+## attr2_1      0.004509   0.003333   1.353  0.17610    
+## intel2_1     0.023258   0.008191   2.839  0.00452 ** 
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 5970.3  on 6498  degrees of freedom
-## Residual deviance: 5009.3  on 6480  degrees of freedom
-## AIC: 5047.3
+##     Null deviance: 4568.4  on 4999  degrees of freedom
+## Residual deviance: 3856.9  on 4981  degrees of freedom
+## AIC: 3894.9
 ## 
 ## Number of Fisher Scoring iterations: 5</code></pre>
 <pre class="r"><code>#variables to include for next model: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + movies + concerts + music + exphappy + attr2_1 + intel2_1
 
 #ALL VARIABLES ARE NOW CONFIDENT AT THE 90% LEVEL
 #BONUS: ACTUALLY ALL THE VARIABLES ARE NOW 95% CONFIDENT AS WELL</code></pre>
+</div>
+</div>
+<div id="logistic-model-including-non-numerical-values" class="section level2">
+<h2><span class="header-section-number">2.3</span> Logistic Model Including non-numerical Values</h2>
+<div id="model-1-1" class="section level3">
+<h3><span class="header-section-number">2.3.1</span> Model 1</h3>
+<pre class="r"><code>#building logistic model with the numerical variables
+log_all1 = glm(match ~ ., data = train2, family = &quot;binomial&quot;)</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred</code></pre>
+<pre class="r"><code>summary(log_all1)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = match ~ ., family = &quot;binomial&quot;, data = train2)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.6543  -0.3592   0.0000   0.0000   3.0591  
+## 
+## Coefficients:
+##                              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)                 5.999e+12  1.604e+13   0.374 0.708391    
+## X                          -2.458e-05  2.712e-05  -0.906 0.364913    
+## gender                      6.768e-01  1.904e-01   3.554 0.000380 ***
+## condtn                     -4.808e-02  1.555e-01  -0.309 0.757225    
+## order                       2.669e-03  9.853e-03   0.271 0.786512    
+## int_corr                    4.587e-01  1.825e-01   2.513 0.011968 *  
+## samerace                   -1.068e-01  1.109e-01  -0.963 0.335479    
+## age_o                      -2.466e-02  1.526e-02  -1.616 0.106187    
+## race_o                     -1.698e-01  4.236e-02  -4.007 6.14e-05 ***
+## pf_o_att                   -2.491e-02  2.274e-02  -1.095 0.273423    
+## pf_o_sin                   -5.075e-02  2.342e-02  -2.166 0.030281 *  
+## pf_o_int                   -2.030e-02  2.381e-02  -0.853 0.393874    
+## pf_o_fun                   -1.642e-02  2.381e-02  -0.689 0.490619    
+## pf_o_amb                   -2.622e-02  2.247e-02  -1.166 0.243430    
+## pf_o_sha                   -6.181e-02  2.321e-02  -2.663 0.007752 ** 
+## dec_o                       4.547e+01  5.861e+03   0.008 0.993810    
+## attr_o                     -8.545e-02  4.412e-02  -1.937 0.052763 .  
+## sinc_o                      5.043e-02  4.766e-02   1.058 0.290003    
+## intel_o                     6.228e-02  6.069e-02   1.026 0.304818    
+## fun_o                       1.188e-01  4.758e-02   2.498 0.012501 *  
+## amb_o                      -7.402e-02  4.496e-02  -1.646 0.099733 .  
+## shar_o                      3.817e-02  3.602e-02   1.060 0.289207    
+## like_o                     -5.488e-02  5.915e-02  -0.928 0.353543    
+## prob_o                      1.997e-01  3.252e-02   6.143 8.12e-10 ***
+## met_o                      -9.741e-01  2.207e-01  -4.413 1.02e-05 ***
+## age                        -2.674e-02  1.916e-02  -1.396 0.162784    
+## field_cdBio                -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdBusiness           -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdEducation          -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdEngineering        -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdEnglish            -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdFilm               -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdFineArts           -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdHistory            -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdLang               -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdLaw                -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdMath               -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdMedSci             -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdOther              -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdPoliSci            -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdSocialWork         -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdSocScie/Psych      -5.999e+12  1.604e+13  -0.374 0.708391    
+## field_cdUndergrad          -5.999e+12  1.604e+13  -0.374 0.708391    
+## race                        9.115e-02  4.723e-02   1.930 0.053596 .  
+## imprace                    -3.508e-02  2.359e-02  -1.487 0.137042    
+## imprelig                   -1.649e-02  2.343e-02  -0.704 0.481474    
+## goalGetADate               -1.063e-01  2.331e-01  -0.456 0.648192    
+## goalMeetNewPpl              1.625e-01  1.347e-01   1.206 0.227722    
+## goalOther                  -3.279e-01  2.851e-01  -1.150 0.250128    
+## goalSRSRelationship         8.525e-01  3.247e-01   2.626 0.008645 ** 
+## goalToSayIDidIt            -4.534e-02  2.476e-01  -0.183 0.854720    
+## date1/Week                 -1.912e-01  2.288e-01  -0.836 0.403405    
+## date2/Month                 6.357e-02  1.767e-01   0.360 0.719003    
+## date2/Week                  3.574e-01  3.162e-01   1.130 0.258401    
+## dateAlmostNever             1.550e-02  2.008e-01   0.077 0.938477    
+## dateSVRL/Week              -1.904e-01  5.013e-01  -0.380 0.704088    
+## dateSVRL/Year               3.100e-02  1.730e-01   0.179 0.857819    
+## go_out1/Week                6.592e-01  5.040e-01   1.308 0.190837    
+## go_out2/Month               7.620e-01  5.660e-01   1.346 0.178187    
+## go_out2/Week                5.673e-01  4.990e-01   1.137 0.255631    
+## go_outAlmostNever           2.082e+01  5.196e+03   0.004 0.996803    
+## go_outSVRL/Week             7.846e-01  5.013e-01   1.565 0.117568    
+## go_outSVRL/Year             2.545e-01  8.414e-01   0.302 0.762299    
+## career_cArchitecture       -5.999e+12  1.604e+13  -0.374 0.708391    
+## career_cBanking/Consulting  3.633e-01  2.014e-01   1.804 0.071190 .  
+## career_cDocMed             -7.713e-01  3.442e-01  -2.241 0.025020 *  
+## career_cEngineer            5.441e-01  3.960e-01   1.374 0.169496    
+## career_cEntertainment       2.565e-01  3.105e-01   0.826 0.408663    
+## career_cIntlAffairs         1.597e-01  2.889e-01   0.553 0.580484    
+## career_cJournalism          7.393e-01  7.492e-01   0.987 0.323729    
+## career_cLawyer             -2.882e-01  4.384e-01  -0.657 0.510923    
+## career_cOther               3.520e-02  7.776e-01   0.045 0.963895    
+## career_cPolitics           -1.842e+00  7.775e-01  -2.369 0.017821 *  
+## career_cProSports           2.206e+00  1.466e+00   1.504 0.132453    
+## career_cPsychologist        4.938e-01  4.228e-01   1.168 0.242804    
+## career_cRealEstate          7.607e-02  1.603e+00   0.047 0.962142    
+## career_cSocialWork          6.691e-01  4.898e-01   1.366 0.171962    
+## career_cSpeechPath          3.777e-01  1.339e+00   0.282 0.777870    
+## career_cUndecided          -4.775e-01  2.936e-01  -1.626 0.103852    
+## sports                     -3.051e-02  2.961e-02  -1.030 0.302840    
+## tvsports                    3.935e-03  2.656e-02   0.148 0.882202    
+## exercise                   -6.083e-02  2.638e-02  -2.306 0.021116 *  
+## dining                     -3.058e-02  3.958e-02  -0.773 0.439727    
+## museums                    -8.123e-02  5.890e-02  -1.379 0.167869    
+## art                         6.091e-02  5.030e-02   1.211 0.225921    
+## hiking                      5.274e-03  2.444e-02   0.216 0.829130    
+## gaming                      6.792e-02  2.504e-02   2.712 0.006680 ** 
+## clubbing                    4.116e-02  2.409e-02   1.708 0.087566 .  
+## reading                     3.120e-02  3.128e-02   0.998 0.318465    
+## tv                          6.125e-02  2.962e-02   2.068 0.038649 *  
+## theater                     7.559e-02  3.614e-02   2.091 0.036485 *  
+## movies                     -1.466e-01  4.302e-02  -3.407 0.000657 ***
+## concerts                    8.431e-02  4.065e-02   2.074 0.038080 *  
+## music                      -1.921e-02  4.634e-02  -0.415 0.678498    
+## shopping                   -1.460e-02  2.894e-02  -0.504 0.613937    
+## yoga                        3.728e-02  2.254e-02   1.654 0.098156 .  
+## exphappy                    8.223e-02  3.671e-02   2.240 0.025072 *  
+## attr1_1                    -2.791e-02  2.827e-02  -0.988 0.323388    
+## sinc1_1                    -1.188e-02  2.887e-02  -0.412 0.680554    
+## intel1_1                   -4.581e-03  2.929e-02  -0.156 0.875714    
+## fun1_1                      7.861e-03  2.960e-02   0.266 0.790566    
+## amb1_1                     -2.306e-02  2.840e-02  -0.812 0.416679    
+## shar1_1                    -1.195e-02  2.943e-02  -0.406 0.684705    
+## attr2_1                     1.136e-01  3.488e-02   3.257 0.001127 ** 
+## sinc2_1                     1.150e-01  3.637e-02   3.161 0.001572 ** 
+## intel2_1                    1.262e-01  3.558e-02   3.548 0.000389 ***
+## fun2_1                      9.656e-02  3.525e-02   2.739 0.006155 ** 
+## amb2_1                      1.124e-01  3.522e-02   3.190 0.001422 ** 
+## shar2_1                     9.152e-02  3.580e-02   2.557 0.010573 *  
+## attr3_1                     9.101e-02  5.700e-02   1.597 0.110365    
+## sinc3_1                    -2.776e-02  4.561e-02  -0.609 0.542685    
+## fun3_1                     -6.781e-02  5.216e-02  -1.300 0.193567    
+## intel3_1                    2.606e-02  6.536e-02   0.399 0.690102    
+## amb3_1                     -4.745e-02  4.084e-02  -1.162 0.245363    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 4568.4  on 4999  degrees of freedom
+## Residual deviance: 2430.5  on 4886  degrees of freedom
+## AIC: 2658.5
+## 
+## Number of Fisher Scoring iterations: 25</code></pre>
+<pre class="r"><code>#significant variable: gender + int_corr + age_o + samerace + race_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + race + goal + career_c + imprace + sports + exercise + art + gaming + clubbing + tv + theater + movies + concerts + yoga + exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1 + shar2_1
+#note all significant at 90% confidence interval</code></pre>
+</div>
+<div id="model-2-1" class="section level3">
+<h3><span class="header-section-number">2.3.2</span> Model 2</h3>
+<pre class="r"><code>#building logistic model with the numerical variables
+log_all3 = glm(match ~ gender + int_corr + age_o + samerace + race_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + race + goal + career_c + imprace + sports + exercise + art + gaming + clubbing + tv + theater + movies + concerts + yoga + exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1 + shar2_1, data = train2, family = &quot;binomial&quot;)
+summary(log_all3)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = match ~ gender + int_corr + age_o + samerace + 
+##     race_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + 
+##     met_o + race + goal + career_c + imprace + sports + exercise + 
+##     art + gaming + clubbing + tv + theater + movies + concerts + 
+##     yoga + exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + 
+##     amb2_1 + shar2_1, family = &quot;binomial&quot;, data = train2)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.1663  -0.6078  -0.4104  -0.2182   3.0342  
+## 
+## Coefficients:
+##                              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)                 -9.343224   2.532777  -3.689 0.000225 ***
+## gender                       0.107112   0.117102   0.915 0.360356    
+## int_corr                     0.327137   0.145353   2.251 0.024408 *  
+## age_o                       -0.027652   0.012840  -2.154 0.031270 *  
+## samerace                    -0.040416   0.091986  -0.439 0.660390    
+## race_o                      -0.059901   0.034728  -1.725 0.084556 .  
+## pf_o_sin                    -0.010392   0.006058  -1.715 0.086282 .  
+## pf_o_sha                    -0.010699   0.006718  -1.592 0.111280    
+## attr_o                       0.254187   0.029404   8.645  &lt; 2e-16 ***
+## fun_o                        0.273268   0.033562   8.142 3.88e-16 ***
+## amb_o                       -0.098207   0.030583  -3.211 0.001322 ** 
+## prob_o                       0.247422   0.022790  10.857  &lt; 2e-16 ***
+## met_o                       -0.686642   0.167152  -4.108 3.99e-05 ***
+## race                         0.039110   0.036190   1.081 0.279833    
+## goalGetADate                -0.069498   0.177691  -0.391 0.695712    
+## goalMeetNewPpl               0.103684   0.099555   1.041 0.297653    
+## goalOther                   -0.190071   0.229707  -0.827 0.407982    
+## goalSRSRelationship          0.499076   0.216835   2.302 0.021355 *  
+## goalToSayIDidIt              0.061301   0.191790   0.320 0.749251    
+## career_cArchitecture       -11.984403 233.558559  -0.051 0.959077    
+## career_cBanking/Consulting  -0.022008   0.120726  -0.182 0.855352    
+## career_cDocMed              -0.153246   0.203607  -0.753 0.451658    
+## career_cEngineer             0.221774   0.255426   0.868 0.385258    
+## career_cEntertainment       -0.194842   0.172340  -1.131 0.258237    
+## career_cIntlAffairs         -0.330031   0.188561  -1.750 0.080073 .  
+## career_cJournalism           0.468918   0.546745   0.858 0.391084    
+## career_cLawyer              -0.011655   0.171940  -0.068 0.945956    
+## career_cOther               -0.256097   0.541030  -0.473 0.635964    
+## career_cPolitics            -1.218503   0.652247  -1.868 0.061739 .  
+## career_cProSports            1.857829   1.092171   1.701 0.088935 .  
+## career_cPsychologist         0.121705   0.258418   0.471 0.637670    
+## career_cRealEstate          -1.381335   1.116917  -1.237 0.216184    
+## career_cSocialWork           0.033380   0.261779   0.128 0.898534    
+## career_cSpeechPath          -0.993240   1.049758  -0.946 0.344067    
+## career_cUndecided           -0.377248   0.230705  -1.635 0.102009    
+## imprace                     -0.037633   0.016763  -2.245 0.024770 *  
+## sports                      -0.009090   0.019710  -0.461 0.644650    
+## exercise                    -0.050092   0.019984  -2.507 0.012188 *  
+## art                          0.004683   0.024121   0.194 0.846074    
+## gaming                       0.031480   0.018135   1.736 0.082590 .  
+## clubbing                     0.026853   0.018329   1.465 0.142908    
+## tv                           0.035850   0.020840   1.720 0.085380 .  
+## theater                      0.023766   0.026228   0.906 0.364878    
+## movies                      -0.088931   0.032041  -2.776 0.005511 ** 
+## concerts                     0.063020   0.023788   2.649 0.008066 ** 
+## yoga                         0.008117   0.017015   0.477 0.633323    
+## exphappy                     0.037014   0.026627   1.390 0.164509    
+## attr2_1                      0.056483   0.024751   2.282 0.022488 *  
+## sinc2_1                      0.059698   0.025715   2.322 0.020258 *  
+## intel2_1                     0.074136   0.025745   2.880 0.003982 ** 
+## fun2_1                       0.050486   0.025367   1.990 0.046566 *  
+## amb2_1                       0.055824   0.024994   2.233 0.025520 *  
+## shar2_1                      0.042042   0.025380   1.657 0.097618 .  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 4568.4  on 4999  degrees of freedom
+## Residual deviance: 3801.0  on 4947  degrees of freedom
+## AIC: 3907
+## 
+## Number of Fisher Scoring iterations: 12</code></pre>
+<pre class="r"><code>#significant variable: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + goal + career_c + imprace + exercise + gaming + clubbing + movies + concerts + exphappy + attr2_1 + sinc2_1 + intel2_1
+#note all significant at 90% confidence interval
+
+#VARIABLES THAT WE TOOK OUT
+#gender + samerace + race_o + race + sports + + art + tv + theater + yoga + fun2_1 + amb2_1 + shar2_1</code></pre>
+</div>
+<div id="model-3-1" class="section level3">
+<h3><span class="header-section-number">2.3.3</span> Model 3</h3>
+<pre class="r"><code>#building logistic model with the numerical variables
+log_all4 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + goal + career_c + imprace + exercise + gaming + clubbing + movies + concerts + exphappy + attr2_1 + sinc2_1 + intel2_1, data = train2, family = &quot;binomial&quot;)
+summary(log_all4)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = match ~ int_corr + age_o + pf_o_sin + pf_o_sha + 
+##     attr_o + fun_o + amb_o + prob_o + met_o + goal + career_c + 
+##     imprace + exercise + gaming + clubbing + movies + concerts + 
+##     exphappy + attr2_1 + sinc2_1 + intel2_1, family = &quot;binomial&quot;, 
+##     data = train2)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.0597  -0.6121  -0.4146  -0.2197   2.9207  
+## 
+## Coefficients:
+##                              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)                 -4.500493   0.686191  -6.559 5.43e-11 ***
+## int_corr                     0.304651   0.142894   2.132  0.03301 *  
+## age_o                       -0.026239   0.012671  -2.071  0.03838 *  
+## pf_o_sin                    -0.011921   0.005938  -2.008  0.04469 *  
+## pf_o_sha                    -0.011234   0.006641  -1.692  0.09071 .  
+## attr_o                       0.241779   0.028732   8.415  &lt; 2e-16 ***
+## fun_o                        0.273783   0.033504   8.172 3.04e-16 ***
+## amb_o                       -0.091643   0.030262  -3.028  0.00246 ** 
+## prob_o                       0.245786   0.022642  10.855  &lt; 2e-16 ***
+## met_o                       -0.671418   0.166154  -4.041 5.32e-05 ***
+## goalGetADate                -0.108319   0.174533  -0.621  0.53485    
+## goalMeetNewPpl               0.070753   0.097352   0.727  0.46737    
+## goalOther                   -0.226845   0.225012  -1.008  0.31338    
+## goalSRSRelationship          0.432656   0.212474   2.036  0.04172 *  
+## goalToSayIDidIt              0.058247   0.189482   0.307  0.75854    
+## career_cArchitecture       -11.996468 233.742814  -0.051  0.95907    
+## career_cBanking/Consulting   0.005517   0.116309   0.047  0.96217    
+## career_cDocMed              -0.107173   0.200940  -0.533  0.59379    
+## career_cEngineer             0.170214   0.252563   0.674  0.50034    
+## career_cEntertainment       -0.134712   0.167885  -0.802  0.42232    
+## career_cIntlAffairs         -0.326394   0.185001  -1.764  0.07768 .  
+## career_cJournalism           0.381951   0.538970   0.709  0.47853    
+## career_cLawyer               0.088353   0.165142   0.535  0.59264    
+## career_cOther               -0.347196   0.527665  -0.658  0.51055    
+## career_cPolitics            -1.115897   0.640448  -1.742  0.08144 .  
+## career_cProSports            1.686794   1.062579   1.587  0.11241    
+## career_cPsychologist         0.186088   0.252605   0.737  0.46132    
+## career_cRealEstate          -1.456909   1.110648  -1.312  0.18960    
+## career_cSocialWork           0.080680   0.258322   0.312  0.75479    
+## career_cSpeechPath          -1.162639   1.045568  -1.112  0.26615    
+## career_cUndecided           -0.384088   0.228397  -1.682  0.09263 .  
+## imprace                     -0.034980   0.015664  -2.233  0.02554 *  
+## exercise                    -0.051330   0.017706  -2.899  0.00374 ** 
+## gaming                       0.036978   0.017428   2.122  0.03386 *  
+## clubbing                     0.023790   0.017889   1.330  0.18357    
+## movies                      -0.050822   0.027514  -1.847  0.06473 .  
+## concerts                     0.066085   0.022315   2.961  0.00306 ** 
+## exphappy                     0.039188   0.025775   1.520  0.12842    
+## attr2_1                      0.008046   0.004384   1.835  0.06644 .  
+## sinc2_1                      0.013460   0.008398   1.603  0.10902    
+## intel2_1                     0.028028   0.008830   3.174  0.00150 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 4568.4  on 4999  degrees of freedom
+## Residual deviance: 3817.9  on 4959  degrees of freedom
+## AIC: 3899.9
+## 
+## Number of Fisher Scoring iterations: 12</code></pre>
+<pre class="r"><code>#significant variable: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + goal + career_c + imprace + exercise + gaming + clubbing + movies + concerts + exphappy + attr2_1 + intel2_1
+#note all significant at 90% confidence interval
+
+#VARIABLES THAT WE TOOK OUT
+#sinc2_1</code></pre>
+</div>
+<div id="model-4-1" class="section level3">
+<h3><span class="header-section-number">2.3.4</span> Model 4</h3>
+<pre class="r"><code>#building logistic model with the numerical variables
+log_all5 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + goal + career_c + imprace + exercise + gaming + clubbing + movies + concerts + exphappy + attr2_1 + intel2_1, data = train2, family = &quot;binomial&quot;)
+summary(log_all5)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = match ~ int_corr + age_o + pf_o_sin + pf_o_sha + 
+##     attr_o + fun_o + amb_o + prob_o + met_o + goal + career_c + 
+##     imprace + exercise + gaming + clubbing + movies + concerts + 
+##     exphappy + attr2_1 + intel2_1, family = &quot;binomial&quot;, data = train2)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.1201  -0.6115  -0.4147  -0.2222   2.9288  
+## 
+## Coefficients:
+##                              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)                 -4.122879   0.642392  -6.418 1.38e-10 ***
+## int_corr                     0.294182   0.142645   2.062  0.03918 *  
+## age_o                       -0.026863   0.012673  -2.120  0.03402 *  
+## pf_o_sin                    -0.012061   0.005932  -2.033  0.04204 *  
+## pf_o_sha                    -0.011275   0.006638  -1.699  0.08939 .  
+## attr_o                       0.239738   0.028683   8.358  &lt; 2e-16 ***
+## fun_o                        0.272381   0.033465   8.139 3.98e-16 ***
+## amb_o                       -0.090799   0.030250  -3.002  0.00269 ** 
+## prob_o                       0.245622   0.022638  10.850  &lt; 2e-16 ***
+## met_o                       -0.670038   0.166155  -4.033 5.52e-05 ***
+## goalGetADate                -0.103911   0.174232  -0.596  0.55091    
+## goalMeetNewPpl               0.075859   0.097268   0.780  0.43546    
+## goalOther                   -0.225482   0.224736  -1.003  0.31571    
+## goalSRSRelationship          0.440411   0.212108   2.076  0.03786 *  
+## goalToSayIDidIt              0.040992   0.189468   0.216  0.82871    
+## career_cArchitecture       -11.933725 233.765599  -0.051  0.95929    
+## career_cBanking/Consulting   0.016701   0.116094   0.144  0.88561    
+## career_cDocMed              -0.099928   0.200944  -0.497  0.61898    
+## career_cEngineer             0.198490   0.251396   0.790  0.42979    
+## career_cEntertainment       -0.125777   0.167844  -0.749  0.45363    
+## career_cIntlAffairs         -0.348355   0.184442  -1.889  0.05893 .  
+## career_cJournalism           0.420199   0.538365   0.781  0.43509    
+## career_cLawyer               0.076013   0.164921   0.461  0.64487    
+## career_cOther               -0.399224   0.525169  -0.760  0.44715    
+## career_cPolitics            -1.025634   0.635414  -1.614  0.10650    
+## career_cProSports            1.810526   1.059123   1.709  0.08737 .  
+## career_cPsychologist         0.171306   0.251644   0.681  0.49603    
+## career_cRealEstate          -1.428847   1.110988  -1.286  0.19841    
+## career_cSocialWork           0.069406   0.258064   0.269  0.78797    
+## career_cSpeechPath          -1.133253   1.045346  -1.084  0.27832    
+## career_cUndecided           -0.346146   0.227008  -1.525  0.12730    
+## imprace                     -0.036346   0.015633  -2.325  0.02008 *  
+## exercise                    -0.052515   0.017684  -2.970  0.00298 ** 
+## gaming                       0.038539   0.017377   2.218  0.02656 *  
+## clubbing                     0.025457   0.017816   1.429  0.15303    
+## movies                      -0.050251   0.027472  -1.829  0.06737 .  
+## concerts                     0.064591   0.022266   2.901  0.00372 ** 
+## exphappy                     0.040426   0.025765   1.569  0.11664    
+## attr2_1                      0.003842   0.003511   1.094  0.27386    
+## intel2_1                     0.024958   0.008575   2.911  0.00361 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 4568.4  on 4999  degrees of freedom
+## Residual deviance: 3820.5  on 4960  degrees of freedom
+## AIC: 3900.5
+## 
+## Number of Fisher Scoring iterations: 12</code></pre>
+<pre class="r"><code>#significant variable: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + goal + career_c + imprace + exercise + gaming + movies + concerts + exphappy + attr2_1 + intel2_1
+#note all significant at 90% confidence interval
+
+#VARIABLES THAT WE TOOK OUT
+#clubbing</code></pre>
+</div>
+<div id="model-5-1" class="section level3">
+<h3><span class="header-section-number">2.3.5</span> Model 5</h3>
+<pre class="r"><code>#building logistic model with the numerical variables
+log_all6 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + goal + career_c + imprace + exercise + gaming + movies + concerts + exphappy + attr2_1 + intel2_1, data = train2, family = &quot;binomial&quot;)
+summary(log_all6)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = match ~ int_corr + age_o + pf_o_sin + pf_o_sha + 
+##     attr_o + fun_o + amb_o + prob_o + met_o + goal + career_c + 
+##     imprace + exercise + gaming + movies + concerts + exphappy + 
+##     attr2_1 + intel2_1, family = &quot;binomial&quot;, data = train2)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.1143  -0.6132  -0.4162  -0.2216   2.9358  
+## 
+## Coefficients:
+##                              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)                 -4.038218   0.638934  -6.320 2.61e-10 ***
+## int_corr                     0.288656   0.142653   2.023  0.04302 *  
+## age_o                       -0.027046   0.012669  -2.135  0.03278 *  
+## pf_o_sin                    -0.012336   0.005925  -2.082  0.03733 *  
+## pf_o_sha                    -0.011066   0.006637  -1.667  0.09548 .  
+## attr_o                       0.241519   0.028660   8.427  &lt; 2e-16 ***
+## fun_o                        0.274260   0.033443   8.201 2.39e-16 ***
+## amb_o                       -0.092421   0.030228  -3.057  0.00223 ** 
+## prob_o                       0.245685   0.022645  10.849  &lt; 2e-16 ***
+## met_o                       -0.670533   0.166248  -4.033 5.50e-05 ***
+## goalGetADate                -0.121762   0.173679  -0.701  0.48326    
+## goalMeetNewPpl               0.057799   0.096415   0.599  0.54885    
+## goalOther                   -0.241536   0.224540  -1.076  0.28206    
+## goalSRSRelationship          0.414039   0.211289   1.960  0.05004 .  
+## goalToSayIDidIt              0.018447   0.188778   0.098  0.92216    
+## career_cArchitecture       -12.056490 233.743716  -0.052  0.95886    
+## career_cBanking/Consulting   0.035940   0.115262   0.312  0.75518    
+## career_cDocMed              -0.077581   0.200370  -0.387  0.69862    
+## career_cEngineer             0.207006   0.251512   0.823  0.41048    
+## career_cEntertainment       -0.115544   0.167314  -0.691  0.48983    
+## career_cIntlAffairs         -0.340307   0.184504  -1.844  0.06512 .  
+## career_cJournalism           0.438640   0.538647   0.814  0.41545    
+## career_cLawyer               0.085391   0.164818   0.518  0.60439    
+## career_cOther               -0.353616   0.523725  -0.675  0.49955    
+## career_cPolitics            -0.992509   0.634567  -1.564  0.11780    
+## career_cProSports            1.831520   1.060140   1.728  0.08406 .  
+## career_cPsychologist         0.167009   0.251282   0.665  0.50629    
+## career_cRealEstate          -1.377516   1.111602  -1.239  0.21526    
+## career_cSocialWork           0.092176   0.257758   0.358  0.72064    
+## career_cSpeechPath          -1.141349   1.045988  -1.091  0.27520    
+## career_cUndecided           -0.348685   0.226686  -1.538  0.12400    
+## imprace                     -0.038373   0.015557  -2.467  0.01364 *  
+## exercise                    -0.052131   0.017637  -2.956  0.00312 ** 
+## gaming                       0.042374   0.017151   2.471  0.01349 *  
+## movies                      -0.046973   0.027339  -1.718  0.08577 .  
+## concerts                     0.066392   0.022182   2.993  0.00276 ** 
+## exphappy                     0.042978   0.025713   1.671  0.09463 .  
+## attr2_1                      0.003976   0.003504   1.135  0.25652    
+## intel2_1                     0.024585   0.008549   2.876  0.00403 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 4568.4  on 4999  degrees of freedom
+## Residual deviance: 3822.5  on 4961  degrees of freedom
+## AIC: 3900.5
+## 
+## Number of Fisher Scoring iterations: 12</code></pre>
+<pre class="r"><code>#significant variable: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + career_c + imprace + exercise + gaming + movies + concerts + exphappy + attr2_1 + intel2_1
+#note all significant at 90% confidence interval
+
+#VARIABLES THAT WE TOOK OUT
+#goal</code></pre>
+</div>
+<div id="model-6" class="section level3">
+<h3><span class="header-section-number">2.3.6</span> Model 6</h3>
+<pre class="r"><code>#building logistic model with the numerical variables
+log_all7 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + career_c + imprace + exercise + gaming + movies + concerts + exphappy + attr2_1 + intel2_1, data = train2, family = &quot;binomial&quot;)
+summary(log_all7)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = match ~ int_corr + age_o + pf_o_sin + pf_o_sha + 
+##     attr_o + fun_o + amb_o + prob_o + met_o + career_c + imprace + 
+##     exercise + gaming + movies + concerts + exphappy + attr2_1 + 
+##     intel2_1, family = &quot;binomial&quot;, data = train2)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.0924  -0.6147  -0.4178  -0.2221   2.9377  
+## 
+## Coefficients:
+##                              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)                 -3.971537   0.635551  -6.249 4.13e-10 ***
+## int_corr                     0.298521   0.142095   2.101  0.03565 *  
+## age_o                       -0.027782   0.012656  -2.195  0.02815 *  
+## pf_o_sin                    -0.012649   0.005913  -2.139  0.03241 *  
+## pf_o_sha                    -0.011240   0.006620  -1.698  0.08953 .  
+## attr_o                       0.241431   0.028606   8.440  &lt; 2e-16 ***
+## fun_o                        0.270380   0.033325   8.113 4.92e-16 ***
+## amb_o                       -0.089467   0.030169  -2.966  0.00302 ** 
+## prob_o                       0.245933   0.022617  10.874  &lt; 2e-16 ***
+## met_o                       -0.666199   0.165896  -4.016 5.93e-05 ***
+## career_cArchitecture       -12.079805 233.779374  -0.052  0.95879    
+## career_cBanking/Consulting   0.018261   0.114409   0.160  0.87319    
+## career_cDocMed              -0.072225   0.199585  -0.362  0.71744    
+## career_cEngineer             0.178001   0.250938   0.709  0.47811    
+## career_cEntertainment       -0.134593   0.165072  -0.815  0.41487    
+## career_cIntlAffairs         -0.342480   0.183871  -1.863  0.06252 .  
+## career_cJournalism           0.432016   0.537853   0.803  0.42185    
+## career_cLawyer               0.049896   0.163598   0.305  0.76037    
+## career_cOther               -0.452722   0.522176  -0.867  0.38595    
+## career_cPolitics            -1.044392   0.629527  -1.659  0.09711 .  
+## career_cProSports            1.793112   1.041990   1.721  0.08528 .  
+## career_cPsychologist         0.166390   0.250453   0.664  0.50646    
+## career_cRealEstate          -1.368318   1.111667  -1.231  0.21837    
+## career_cSocialWork           0.138554   0.255785   0.542  0.58804    
+## career_cSpeechPath          -1.152061   1.046162  -1.101  0.27080    
+## career_cUndecided           -0.390862   0.224652  -1.740  0.08188 .  
+## imprace                     -0.040788   0.015359  -2.656  0.00792 ** 
+## exercise                    -0.051689   0.017543  -2.946  0.00321 ** 
+## gaming                       0.041439   0.016998   2.438  0.01478 *  
+## movies                      -0.044482   0.027151  -1.638  0.10135    
+## concerts                     0.063969   0.021992   2.909  0.00363 ** 
+## exphappy                     0.047618   0.025248   1.886  0.05929 .  
+## attr2_1                      0.003706   0.003481   1.065  0.28701    
+## intel2_1                     0.022940   0.008368   2.741  0.00612 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 4568.4  on 4999  degrees of freedom
+## Residual deviance: 3828.9  on 4966  degrees of freedom
+## AIC: 3896.9
+## 
+## Number of Fisher Scoring iterations: 12</code></pre>
+<pre class="r"><code>#significant variable: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + career_c + imprace + exercise + gaming + movies + concerts + exphappy + attr2_1 + intel2_1
+#note all significant at 90% confidence interval
+
+#NOTE THAT THE ONLY CAREER THAT IS 90% SIGNIFICANT IS A CAREER IN POLITICS AND UNDECIDED AND BOTH RESULT IN SERIOUS LOSS OF CHANCE IN GETTING MATCHED (lol)</code></pre>
+</div>
+</div>
+<div id="final-logistic-models" class="section level2">
+<h2><span class="header-section-number">2.4</span> Final Logistic Models</h2>
+<pre class="r"><code>summary(log6)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = match ~ int_corr + age_o + pf_o_sin + pf_o_sha + 
+##     attr_o + fun_o + prob_o + met_o + imprace + exercise + art + 
+##     gaming + movies + concerts + music + exphappy + attr2_1 + 
+##     intel2_1, family = &quot;binomial&quot;, data = train1)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.1080  -0.6147  -0.4207  -0.2314   2.9397  
+## 
+## Coefficients:
+##              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) -4.262968   0.626929  -6.800 1.05e-11 ***
+## int_corr     0.274418   0.142057   1.932  0.05339 .  
+## age_o       -0.028943   0.012554  -2.306  0.02114 *  
+## pf_o_sin    -0.012412   0.005882  -2.110  0.03485 *  
+## pf_o_sha    -0.010477   0.006537  -1.603  0.10901    
+## attr_o       0.235766   0.028198   8.361  &lt; 2e-16 ***
+## fun_o        0.226783   0.030179   7.515 5.71e-14 ***
+## prob_o       0.239499   0.022238  10.770  &lt; 2e-16 ***
+## met_o       -0.649693   0.164135  -3.958 7.55e-05 ***
+## imprace     -0.036928   0.014971  -2.467  0.01364 *  
+## exercise    -0.051537   0.017117  -3.011  0.00261 ** 
+## art          0.024064   0.020928   1.150  0.25019    
+## gaming       0.046310   0.016707   2.772  0.00557 ** 
+## movies      -0.043379   0.027004  -1.606  0.10819    
+## concerts     0.081209   0.028569   2.843  0.00448 ** 
+## music       -0.047821   0.032051  -1.492  0.13570    
+## exphappy     0.050338   0.024436   2.060  0.03940 *  
+## attr2_1      0.004509   0.003333   1.353  0.17610    
+## intel2_1     0.023258   0.008191   2.839  0.00452 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 4568.4  on 4999  degrees of freedom
+## Residual deviance: 3856.9  on 4981  degrees of freedom
+## AIC: 3894.9
+## 
+## Number of Fisher Scoring iterations: 5</code></pre>
+<pre class="r"><code>summary(log_all7)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = match ~ int_corr + age_o + pf_o_sin + pf_o_sha + 
+##     attr_o + fun_o + amb_o + prob_o + met_o + career_c + imprace + 
+##     exercise + gaming + movies + concerts + exphappy + attr2_1 + 
+##     intel2_1, family = &quot;binomial&quot;, data = train2)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.0924  -0.6147  -0.4178  -0.2221   2.9377  
+## 
+## Coefficients:
+##                              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)                 -3.971537   0.635551  -6.249 4.13e-10 ***
+## int_corr                     0.298521   0.142095   2.101  0.03565 *  
+## age_o                       -0.027782   0.012656  -2.195  0.02815 *  
+## pf_o_sin                    -0.012649   0.005913  -2.139  0.03241 *  
+## pf_o_sha                    -0.011240   0.006620  -1.698  0.08953 .  
+## attr_o                       0.241431   0.028606   8.440  &lt; 2e-16 ***
+## fun_o                        0.270380   0.033325   8.113 4.92e-16 ***
+## amb_o                       -0.089467   0.030169  -2.966  0.00302 ** 
+## prob_o                       0.245933   0.022617  10.874  &lt; 2e-16 ***
+## met_o                       -0.666199   0.165896  -4.016 5.93e-05 ***
+## career_cArchitecture       -12.079805 233.779374  -0.052  0.95879    
+## career_cBanking/Consulting   0.018261   0.114409   0.160  0.87319    
+## career_cDocMed              -0.072225   0.199585  -0.362  0.71744    
+## career_cEngineer             0.178001   0.250938   0.709  0.47811    
+## career_cEntertainment       -0.134593   0.165072  -0.815  0.41487    
+## career_cIntlAffairs         -0.342480   0.183871  -1.863  0.06252 .  
+## career_cJournalism           0.432016   0.537853   0.803  0.42185    
+## career_cLawyer               0.049896   0.163598   0.305  0.76037    
+## career_cOther               -0.452722   0.522176  -0.867  0.38595    
+## career_cPolitics            -1.044392   0.629527  -1.659  0.09711 .  
+## career_cProSports            1.793112   1.041990   1.721  0.08528 .  
+## career_cPsychologist         0.166390   0.250453   0.664  0.50646    
+## career_cRealEstate          -1.368318   1.111667  -1.231  0.21837    
+## career_cSocialWork           0.138554   0.255785   0.542  0.58804    
+## career_cSpeechPath          -1.152061   1.046162  -1.101  0.27080    
+## career_cUndecided           -0.390862   0.224652  -1.740  0.08188 .  
+## imprace                     -0.040788   0.015359  -2.656  0.00792 ** 
+## exercise                    -0.051689   0.017543  -2.946  0.00321 ** 
+## gaming                       0.041439   0.016998   2.438  0.01478 *  
+## movies                      -0.044482   0.027151  -1.638  0.10135    
+## concerts                     0.063969   0.021992   2.909  0.00363 ** 
+## exphappy                     0.047618   0.025248   1.886  0.05929 .  
+## attr2_1                      0.003706   0.003481   1.065  0.28701    
+## intel2_1                     0.022940   0.008368   2.741  0.00612 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 4568.4  on 4999  degrees of freedom
+## Residual deviance: 3828.9  on 4966  degrees of freedom
+## AIC: 3896.9
+## 
+## Number of Fisher Scoring iterations: 12</code></pre>
+<div id="predictions-from-logistic-models-only-numeric-variables" class="section level3">
+<h3><span class="header-section-number">2.4.1</span> Predictions from Logistic Models (only numeric variables)</h3>
+<pre class="r"><code>#log6 = predict.model.log6
+#log_all7 = predict.model.log_all7
+
+prop.table(table(test1$match))</code></pre>
+<pre><code>## 
+##     0     1 
+## 0.829 0.171</code></pre>
+<pre class="r"><code># Predict the Match Probability for the Testing Dataset using the model developed on the training dataset
+#use survival.model2
+predict.model.log6 = predict(log6, newdata = test1, type = &quot;response&quot;)
+predict.model.log6 = as.data.frame(predict.model.log6, na.rm = TRUE)
+predict.model.log6$predict.model &lt;- as.numeric(predict.model.log6$predict.model)
+predict.model.log6$match &lt;- ifelse(predict.model.log6$predict.model &gt; 0.5, 1, 0)
+predict.model.log6$X &lt;- test1$X
+predict.model.log6</code></pre>
+<pre><code>##      predict.model.log6 predict.model match    X
+## 5001        0.316954925   0.316954925     0 8087
+## 5002        0.209183751   0.209183751     0 8279
+## 5003        0.068571242   0.068571242     0 2827
+## 5004        0.045993918   0.045993918     0 6186
+## 5005        0.120775443   0.120775443     0 5228
+## 5006        0.119325320   0.119325320     0 3559
+## 5007        0.097282932   0.097282932     0  818
+## 5008        0.063619118   0.063619118     0  233
+## 5009        0.088218506   0.088218506     0 2826
+## 5010        0.222830734   0.222830734     0 8101
+## 5011        0.290354187   0.290354187     0 7999
+## 5012        0.096181520   0.096181520     0 3027
+## 5013        0.485015366   0.485015366     0 1778
+## 5014        0.113504648   0.113504648     0 5157
+## 5015        0.186873418   0.186873418     0 6306
+## 5016        0.232935680   0.232935680     0 3583
+## 5017        0.232088648   0.232088648     0 3400
+## 5018        0.343092785   0.343092785     0  123
+## 5019        0.024823550   0.024823550     0 1370
+## 5020        0.373292700   0.373292700     0 1127
+## 5021        0.202646413   0.202646413     0 7007
+## 5022        0.076863116   0.076863116     0 7222
+## 5023        0.425560088   0.425560088     0 3900
+## 5024        0.288667422   0.288667422     0 2902
+## 5025        0.121340714   0.121340714     0 1136
+## 5026        0.050854943   0.050854943     0 7366
+## 5027        0.236377885   0.236377885     0 4698
+## 5028        0.197619567   0.197619567     0 5574
+## 5029        0.104075292   0.104075292     0 7012
+## 5030        0.138036325   0.138036325     0 7707
+## 5031        0.049901960   0.049901960     0  563
+## 5032        0.023401282   0.023401282     0 6634
+## 5033        0.443593011   0.443593011     0 7253
+## 5034        0.122008372   0.122008372     0 3329
+## 5035        0.043040073   0.043040073     0 1206
+## 5036        0.005011137   0.005011137     0  549
+## 5037        0.381023736   0.381023736     0 2197
+## 5038        0.087499402   0.087499402     0  448
+## 5039        0.095721228   0.095721228     0 3061
+## 5040        0.483679728   0.483679728     0 4765
+## 5041        0.254528364   0.254528364     0 5725
+## 5042        0.113001745   0.113001745     0 2294
+## 5043        0.065099426   0.065099426     0 7803
+## 5044        0.508390509   0.508390509     1  945
+## 5045        0.103605722   0.103605722     0 8207
+## 5046        0.436004471   0.436004471     0 3577
+## 5047        0.178912333   0.178912333     0 6553
+## 5048        0.056188465   0.056188465     0 2248
+## 5049        0.323039770   0.323039770     0 5522
+## 5050        0.085807010   0.085807010     0  395
+## 5051        0.091562450   0.091562450     0 4599
+## 5052        0.094988255   0.094988255     0 1918
+## 5053        0.194676436   0.194676436     0 3446
+## 5054        0.028014708   0.028014708     0 8073
+## 5055        0.083811494   0.083811494     0 3970
+## 5056        0.014265343   0.014265343     0 4789
+## 5057        0.171058131   0.171058131     0 4203
+## 5058        0.178081914   0.178081914     0 7178
+## 5059        0.297092786   0.297092786     0 1281
+## 5060        0.157182008   0.157182008     0 1180
+## 5061        0.207040312   0.207040312     0 1566
+## 5062        0.066808965   0.066808965     0 1741
+## 5063        0.134477505   0.134477505     0 2080
+## 5064        0.208579446   0.208579446     0 2504
+## 5065        0.123516163   0.123516163     0  477
+## 5066        0.304273843   0.304273843     0 1892
+## 5067        0.078886841   0.078886841     0 8130
+## 5068        0.324518826   0.324518826     0   62
+## 5069        0.756153052   0.756153052     1 8094
+## 5070        0.078756374   0.078756374     0 1986
+## 5071        0.072437199   0.072437199     0 5972
+## 5072        0.070077623   0.070077623     0 1514
+## 5073        0.015823589   0.015823589     0 6592
+## 5074        0.159930628   0.159930628     0 7023
+## 5075        0.347867325   0.347867325     0 3128
+## 5076        0.040473098   0.040473098     0  525
+## 5077        0.142189240   0.142189240     0 8352
+## 5078        0.342559350   0.342559350     0  649
+## 5079        0.079958687   0.079958687     0 6286
+## 5080        0.107811746   0.107811746     0 4729
+## 5081        0.370776249   0.370776249     0 1609
+## 5082        0.129901292   0.129901292     0 2565
+## 5083        0.075368856   0.075368856     0 5428
+## 5084        0.278689312   0.278689312     0 2751
+## 5085        0.166943502   0.166943502     0 5412
+## 5086        0.074296169   0.074296169     0 3449
+## 5087        0.422450320   0.422450320     0 7586
+## 5088        0.141614450   0.141614450     0 7193
+## 5089        0.006085002   0.006085002     0  720
+## 5090        0.012071600   0.012071600     0 3847
+## 5091        0.066794901   0.066794901     0 7449
+## 5092        0.156042798   0.156042798     0 5597
+## 5093        0.016636293   0.016636293     0  776
+## 5094        0.171873994   0.171873994     0 4920
+## 5095        0.088212889   0.088212889     0 3447
+## 5096        0.002381910   0.002381910     0 1347
+## 5097        0.160390892   0.160390892     0 5773
+## 5098        0.172443746   0.172443746     0 5964
+## 5099        0.029743419   0.029743419     0 2836
+## 5100        0.132590200   0.132590200     0 2296
+## 5101        0.219674032   0.219674032     0 1373
+## 5102        0.015006845   0.015006845     0  380
+## 5103        0.372569823   0.372569823     0 3079
+## 5104        0.133096118   0.133096118     0 1504
+## 5105        0.206943959   0.206943959     0 6728
+## 5106        0.309622749   0.309622749     0 6233
+## 5107        0.041424922   0.041424922     0 4802
+## 5108        0.113042623   0.113042623     0 4052
+## 5109        0.385761552   0.385761552     0 6984
+## 5110        0.396539199   0.396539199     0 4703
+## 5111        0.073378785   0.073378785     0  145
+## 5112        0.019510724   0.019510724     0 6846
+## 5113        0.052014798   0.052014798     0 3506
+## 5114        0.219390255   0.219390255     0 8190
+## 5115        0.026183129   0.026183129     0 1414
+## 5116        0.592124631   0.592124631     1 4084
+## 5117        0.021928198   0.021928198     0 3509
+## 5118        0.125446983   0.125446983     0 7641
+## 5119        0.352201073   0.352201073     0 3424
+## 5120        0.229589971   0.229589971     0 3883
+## 5121        0.016741798   0.016741798     0 7286
+## 5122        0.475369554   0.475369554     0 3907
+## 5123        0.167618580   0.167618580     0 6998
+## 5124        0.125551241   0.125551241     0 2671
+## 5125        0.043408613   0.043408613     0 7352
+## 5126        0.009034931   0.009034931     0 1461
+## 5127        0.174404794   0.174404794     0 4527
+## 5128        0.067510527   0.067510527     0 6440
+## 5129        0.128851833   0.128851833     0  158
+## 5130        0.085119364   0.085119364     0 3342
+## 5131        0.241817945   0.241817945     0  135
+## 5132        0.170270899   0.170270899     0 1113
+## 5133        0.300684373   0.300684373     0 2769
+## 5134        0.081726330   0.081726330     0 6086
+## 5135        0.082564859   0.082564859     0 8055
+## 5136        0.139825645   0.139825645     0 3999
+## 5137        0.068586971   0.068586971     0 2921
+## 5138        0.018252823   0.018252823     0 1244
+## 5139        0.154424923   0.154424923     0 2586
+## 5140        0.614967516   0.614967516     1 6146
+## 5141        0.018165383   0.018165383     0 2913
+## 5142        0.601758241   0.601758241     1 1284
+## 5143        0.256733445   0.256733445     0 3062
+## 5144        0.093785421   0.093785421     0   77
+## 5145        0.109056529   0.109056529     0 4876
+## 5146        0.145289224   0.145289224     0 4495
+## 5147        0.168397386   0.168397386     0 6351
+## 5148        0.236347104   0.236347104     0 5699
+## 5149        0.020651760   0.020651760     0 2207
+## 5150        0.035234661   0.035234661     0  957
+## 5151        0.045595083   0.045595083     0  489
+## 5152        0.069115555   0.069115555     0 6688
+## 5153        0.510351517   0.510351517     1 5949
+## 5154        0.068874467   0.068874467     0 4193
+## 5155        0.001621985   0.001621985     0 6416
+## 5156        0.241302832   0.241302832     0 1104
+## 5157        0.181589495   0.181589495     0  745
+## 5158        0.504621118   0.504621118     1 6691
+## 5159        0.227829586   0.227829586     0 4272
+## 5160        0.123949647   0.123949647     0 1877
+## 5161        0.098666981   0.098666981     0 7619
+## 5162        0.458292255   0.458292255     0 6118
+## 5163        0.223921935   0.223921935     0 8092
+## 5164        0.011868364   0.011868364     0 2693
+## 5165        0.020223040   0.020223040     0 3787
+## 5166        0.065052361   0.065052361     0 4801
+## 5167        0.107787848   0.107787848     0 2996
+## 5168        0.309034231   0.309034231     0 3278
+## 5169        0.163415705   0.163415705     0 5207
+## 5170        0.254608672   0.254608672     0 5425
+## 5171        0.244926038   0.244926038     0 5065
+## 5172        0.031246654   0.031246654     0 7905
+## 5173        0.015339962   0.015339962     0 2613
+## 5174        0.377305244   0.377305244     0 6899
+## 5175        0.236924682   0.236924682     0 7571
+## 5176        0.277909392   0.277909392     0 1929
+## 5177        0.283898002   0.283898002     0 1530
+## 5178        0.092752817   0.092752817     0 3697
+## 5179        0.014868238   0.014868238     0 4491
+## 5180        0.218279212   0.218279212     0 5419
+## 5181        0.012602916   0.012602916     0  727
+## 5182        0.055009367   0.055009367     0  432
+## 5183        0.105618212   0.105618212     0 7575
+## 5184        0.251663463   0.251663463     0 2334
+## 5185        0.086629280   0.086629280     0 1217
+## 5186        0.180815586   0.180815586     0 6444
+## 5187        0.107358540   0.107358540     0 5783
+## 5188        0.306201385   0.306201385     0 3539
+## 5189        0.115718180   0.115718180     0 6936
+## 5190        0.416509657   0.416509657     0 6841
+## 5191        0.354957174   0.354957174     0 2597
+## 5192        0.027520409   0.027520409     0 1640
+## 5193        0.245341411   0.245341411     0 3533
+## 5194        0.654130330   0.654130330     1 6291
+## 5195        0.033191459   0.033191459     0 2940
+## 5196        0.346279069   0.346279069     0 4176
+## 5197        0.109126031   0.109126031     0 7691
+## 5198        0.091203242   0.091203242     0 6051
+## 5199        0.226134746   0.226134746     0 4523
+## 5200        0.125940887   0.125940887     0 7629
+## 5201        0.038124202   0.038124202     0 6594
+## 5202        0.088682640   0.088682640     0 5221
+## 5203        0.328447843   0.328447843     0 3469
+## 5204        0.101493883   0.101493883     0  461
+## 5205        0.306482192   0.306482192     0 7262
+## 5206        0.117011438   0.117011438     0 2833
+## 5207        0.047052270   0.047052270     0 4319
+## 5208        0.105332356   0.105332356     0 3026
+## 5209        0.305786867   0.305786867     0  636
+## 5210        0.113086071   0.113086071     0 1100
+## 5211        0.809226731   0.809226731     1 3141
+## 5212        0.183262546   0.183262546     0 4639
+## 5213        0.224486976   0.224486976     0 4368
+## 5214        0.497765130   0.497765130     0 1601
+## 5215        0.164484460   0.164484460     0 4500
+## 5216        0.049003192   0.049003192     0 4089
+## 5217        0.302258423   0.302258423     0 4601
+## 5218        0.208715034   0.208715034     0 2016
+## 5219        0.318564242   0.318564242     0 1717
+## 5220        0.046498008   0.046498008     0 1444
+## 5221        0.006460366   0.006460366     0 3173
+## 5222        0.093691841   0.093691841     0 3703
+## 5223        0.058750933   0.058750933     0 8138
+## 5224        0.020349199   0.020349199     0 7241
+## 5225        0.411836711   0.411836711     0 2419
+## 5226        0.624508087   0.624508087     1 7094
+## 5227        0.201288956   0.201288956     0 5195
+## 5228        0.219269112   0.219269112     0 3766
+## 5229        0.046317773   0.046317773     0 2487
+## 5230        0.211807201   0.211807201     0 4451
+## 5231        0.303836249   0.303836249     0 5688
+## 5232        0.049000018   0.049000018     0 1646
+## 5233        0.100189973   0.100189973     0 3023
+## 5234        0.068091220   0.068091220     0 4438
+## 5235        0.104111662   0.104111662     0 6503
+## 5236        0.088887546   0.088887546     0 3107
+## 5237        0.086031904   0.086031904     0 4132
+## 5238        0.126884505   0.126884505     0  338
+## 5239        0.252616244   0.252616244     0 5175
+## 5240        0.006731984   0.006731984     0  715
+## 5241        0.036685994   0.036685994     0 7527
+## 5242        0.151983192   0.151983192     0 1883
+## 5243        0.151429251   0.151429251     0 8023
+## 5244        0.093394130   0.093394130     0  168
+## 5245        0.269613574   0.269613574     0  163
+## 5246        0.077819815   0.077819815     0 6321
+## 5247        0.228276037   0.228276037     0 5258
+## 5248        0.444519233   0.444519233     0 1424
+## 5249        0.261103201   0.261103201     0 5375
+## 5250        0.332586732   0.332586732     0  186
+## 5251        0.074507834   0.074507834     0 5959
+## 5252        0.042183837   0.042183837     0 4285
+## 5253        0.156951332   0.156951332     0 1851
+## 5254        0.143112792   0.143112792     0 2798
+## 5255        0.010916360   0.010916360     0 3840
+## 5256        0.040656575   0.040656575     0  496
+## 5257        0.674238977   0.674238977     1  705
+## 5258        0.087825139   0.087825139     0 4135
+## 5259        0.037221186   0.037221186     0 2366
+## 5260        0.873192185   0.873192185     1 6269
+## 5261        0.078398275   0.078398275     0 3977
+## 5262        0.347105170   0.347105170     0 5632
+## 5263        0.137977723   0.137977723     0 1036
+## 5264        0.398869046   0.398869046     0 5893
+## 5265        0.056056480   0.056056480     0  786
+## 5266        0.117068280   0.117068280     0 6889
+## 5267        0.321547651   0.321547651     0 5281
+## 5268        0.311970456   0.311970456     0 7518
+## 5269        0.059869187   0.059869187     0 2165
+## 5270        0.312924330   0.312924330     0 4991
+## 5271        0.170128545   0.170128545     0 4600
+## 5272        0.023514147   0.023514147     0 2924
+## 5273        0.079963972   0.079963972     0 7683
+## 5274        0.190845695   0.190845695     0 2731
+## 5275        0.036206888   0.036206888     0 5614
+## 5276        0.302108199   0.302108199     0 7214
+## 5277        0.134725948   0.134725948     0 8372
+## 5278        0.036435221   0.036435221     0  213
+## 5279        0.191743461   0.191743461     0 1005
+## 5280        0.031080608   0.031080608     0 3789
+## 5281        0.182380004   0.182380004     0 4758
+## 5282        0.295722619   0.295722619     0 5544
+## 5283        0.074179243   0.074179243     0 8095
+## 5284        0.216095673   0.216095673     0 7010
+## 5285        0.044533789   0.044533789     0 3949
+## 5286        0.272710354   0.272710354     0 7966
+## 5287        0.175460906   0.175460906     0 4260
+## 5288        0.546052623   0.546052623     1 7290
+## 5289        0.459547020   0.459547020     0 6771
+## 5290        0.192268304   0.192268304     0 3254
+## 5291        0.029483384   0.029483384     0 7903
+## 5292        0.136521114   0.136521114     0 7887
+## 5293        0.089454793   0.089454793     0 3587
+## 5294        0.023699450   0.023699450     0 7171
+## 5295        0.221370143   0.221370143     0 6561
+## 5296        0.414750559   0.414750559     0 6659
+## 5297        0.127355788   0.127355788     0 5034
+## 5298        0.336159245   0.336159245     0 1068
+## 5299        0.007680847   0.007680847     0 8327
+## 5300        0.124226259   0.124226259     0 2278
+## 5301        0.017969941   0.017969941     0 2166
+## 5302        0.293081969   0.293081969     0 3778
+## 5303        0.235638300   0.235638300     0  665
+## 5304        0.161169645   0.161169645     0 4283
+## 5305        0.096652812   0.096652812     0 3383
+## 5306        0.221369640   0.221369640     0 2775
+## 5307        0.200207599   0.200207599     0  757
+## 5308        0.288247048   0.288247048     0 4977
+## 5309        0.119270768   0.119270768     0 7389
+## 5310        0.093409219   0.093409219     0 4974
+## 5311        0.252584372   0.252584372     0 2147
+## 5312        0.052496636   0.052496636     0 7772
+## 5313        0.150981766   0.150981766     0 3066
+## 5314        0.168616140   0.168616140     0 4152
+## 5315        0.175206823   0.175206823     0 7616
+## 5316        0.024157065   0.024157065     0 4836
+## 5317        0.321608556   0.321608556     0 1874
+## 5318        0.094162721   0.094162721     0 1534
+## 5319        0.111546584   0.111546584     0 2171
+## 5320        0.160742432   0.160742432     0 4244
+## 5321        0.261198997   0.261198997     0 3716
+## 5322        0.021794443   0.021794443     0 3340
+## 5323        0.496627879   0.496627879     0 5859
+## 5324        0.071303276   0.071303276     0 1978
+## 5325        0.079365904   0.079365904     0 1916
+## 5326        0.058069789   0.058069789     0 3740
+## 5327        0.042359926   0.042359926     0 5067
+## 5328        0.034991733   0.034991733     0 7860
+## 5329        0.012854326   0.012854326     0 3798
+## 5330        0.081018372   0.081018372     0 5711
+## 5331        0.092251219   0.092251219     0 2209
+## 5332        0.266032239   0.266032239     0 5875
+## 5333        0.034666332   0.034666332     0 7599
+## 5334        0.222847497   0.222847497     0 3319
+## 5335        0.116620220   0.116620220     0 6772
+## 5336        0.090833089   0.090833089     0 7797
+## 5337        0.065466523   0.065466523     0 5076
+## 5338        0.051115830   0.051115830     0 8126
+## 5339        0.083575756   0.083575756     0 8313
+## 5340        0.709161214   0.709161214     1 6111
+## 5341        0.058609026   0.058609026     0 2990
+## 5342        0.359864446   0.359864446     0  614
+## 5343        0.602310837   0.602310837     1 4696
+## 5344        0.201208640   0.201208640     0 5096
+## 5345        0.135163603   0.135163603     0 2448
+## 5346        0.061877050   0.061877050     0 3782
+## 5347        0.462660583   0.462660583     0 6272
+## 5348        0.140086268   0.140086268     0 2206
+## 5349        0.359884530   0.359884530     0 8043
+## 5350        0.355405633   0.355405633     0 6171
+## 5351        0.098410463   0.098410463     0 1879
+## 5352        0.645753258   0.645753258     1 4766
+## 5353        0.030680583   0.030680583     0 1170
+## 5354        0.237854686   0.237854686     0 3590
+## 5355        0.037621117   0.037621117     0 7556
+## 5356        0.053271031   0.053271031     0 6868
+## 5357        0.187052592   0.187052592     0 3279
+## 5358        0.048831965   0.048831965     0 3186
+## 5359        0.187622894   0.187622894     0  659
+## 5360        0.205191103   0.205191103     0 3926
+## 5361        0.045686420   0.045686420     0 6043
+## 5362        0.062916815   0.062916815     0 4298
+## 5363        0.302571335   0.302571335     0 4805
+## 5364        0.218426340   0.218426340     0 5294
+## 5365        0.087043039   0.087043039     0 5001
+## 5366        0.033318861   0.033318861     0 7017
+## 5367        0.042597804   0.042597804     0 7315
+## 5368        0.103396078   0.103396078     0 5159
+## 5369        0.049558775   0.049558775     0 3654
+## 5370        0.065822218   0.065822218     0 5674
+## 5371        0.230210837   0.230210837     0 8007
+## 5372        0.044175280   0.044175280     0 1557
+## 5373        0.036001376   0.036001376     0 4799
+## 5374        0.037491231   0.037491231     0 2184
+## 5375        0.161821298   0.161821298     0 6727
+## 5376        0.174399022   0.174399022     0 3389
+## 5377        0.126384323   0.126384323     0  658
+## 5378        0.498907205   0.498907205     0 4877
+## 5379        0.144795248   0.144795248     0 3923
+## 5380        0.027904089   0.027904089     0 7151
+## 5381        0.129068693   0.129068693     0 5279
+## 5382        0.259683661   0.259683661     0  965
+## 5383        0.057452364   0.057452364     0 1533
+## 5384        0.155609176   0.155609176     0 1334
+## 5385        0.018523234   0.018523234     0 3864
+## 5386        0.233334939   0.233334939     0  375
+## 5387        0.115397814   0.115397814     0 2994
+## 5388        0.077219914   0.077219914     0 8269
+## 5389        0.060243506   0.060243506     0 2277
+## 5390        0.155181303   0.155181303     0 7693
+## 5391        0.211392623   0.211392623     0 5852
+## 5392        0.194427603   0.194427603     0 1063
+## 5393        0.246998280   0.246998280     0 5326
+## 5394        0.240888046   0.240888046     0 3871
+## 5395        0.092272029   0.092272029     0 2512
+## 5396        0.124109105   0.124109105     0 4305
+## 5397        0.405167556   0.405167556     0 7236
+## 5398        0.043369765   0.043369765     0 1264
+## 5399        0.074116058   0.074116058     0  619
+## 5400        0.036993251   0.036993251     0 4540
+## 5401        0.156121298   0.156121298     0 6251
+## 5402        0.332487019   0.332487019     0 1475
+## 5403        0.119800266   0.119800266     0 2899
+## 5404        0.017815579   0.017815579     0  460
+## 5405        0.013938868   0.013938868     0 4575
+## 5406        0.147529587   0.147529587     0 6806
+## 5407        0.044869073   0.044869073     0 5359
+## 5408        0.100056731   0.100056731     0  594
+## 5409        0.533108355   0.533108355     1 4661
+## 5410        0.331320277   0.331320277     0 6225
+## 5411        0.181013411   0.181013411     0 4209
+## 5412        0.208072085   0.208072085     0 5100
+## 5413        0.300871384   0.300871384     0 2126
+## 5414        0.213872308   0.213872308     0 5672
+## 5415        0.075364199   0.075364199     0 3994
+## 5416        0.184750954   0.184750954     0  876
+## 5417        0.225446870   0.225446870     0 3486
+## 5418        0.110144699   0.110144699     0 6537
+## 5419        0.031864488   0.031864488     0 2770
+## 5420        0.420733564   0.420733564     0 7005
+## 5421        0.060085782   0.060085782     0 4558
+## 5422        0.281018574   0.281018574     0 3555
+## 5423        0.182757089   0.182757089     0 3028
+## 5424        0.045084880   0.045084880     0 1486
+## 5425        0.101266804   0.101266804     0 3515
+## 5426        0.412902889   0.412902889     0 3283
+## 5427        0.082939810   0.082939810     0 6812
+## 5428        0.029608889   0.029608889     0 6509
+## 5429        0.231009024   0.231009024     0 4137
+## 5430        0.260611943   0.260611943     0 1197
+## 5431        0.225276096   0.225276096     0 8312
+## 5432        0.023168940   0.023168940     0 3903
+## 5433        0.324143441   0.324143441     0 1517
+## 5434        0.438458389   0.438458389     0 6079
+## 5435        0.079626700   0.079626700     0 4241
+## 5436        0.122613287   0.122613287     0 4586
+## 5437        0.087272740   0.087272740     0 1380
+## 5438        0.112211964   0.112211964     0  790
+## 5439        0.039798326   0.039798326     0 2773
+## 5440        0.089303331   0.089303331     0 8172
+## 5441        0.108908717   0.108908717     0 5243
+## 5442        0.082168943   0.082168943     0 6988
+## 5443        0.075862031   0.075862031     0 1415
+## 5444        0.044521274   0.044521274     0 4476
+## 5445        0.087488018   0.087488018     0 4191
+## 5446        0.108566614   0.108566614     0 5275
+## 5447        0.123863752   0.123863752     0 5567
+## 5448        0.027606884   0.027606884     0 1098
+## 5449        0.057689663   0.057689663     0 5715
+## 5450        0.043742300   0.043742300     0 4117
+## 5451        0.039070495   0.039070495     0  497
+## 5452        0.046960454   0.046960454     0 3775
+## 5453        0.138442961   0.138442961     0 3567
+## 5454        0.161607385   0.161607385     0 4448
+## 5455        0.213660542   0.213660542     0 2188
+## 5456        0.388336933   0.388336933     0 6302
+## 5457        0.071179176   0.071179176     0 7929
+## 5458        0.079526537   0.079526537     0  871
+## 5459        0.107970217   0.107970217     0 3604
+## 5460        0.016621116   0.016621116     0 7167
+## 5461        0.168475035   0.168475035     0 2878
+## 5462        0.160351842   0.160351842     0 4279
+## 5463        0.096298364   0.096298364     0 4793
+## 5464        0.115057028   0.115057028     0 3163
+## 5465        0.109303795   0.109303795     0 4450
+## 5466        0.433205409   0.433205409     0 6672
+## 5467        0.127100624   0.127100624     0 7409
+## 5468        0.167586772   0.167586772     0 3189
+## 5469        0.054508420   0.054508420     0 2727
+## 5470        0.083173965   0.083173965     0 3253
+## 5471        0.127575311   0.127575311     0 1159
+## 5472        0.352942488   0.352942488     0 3266
+## 5473        0.076073627   0.076073627     0 6779
+## 5474        0.027813704   0.027813704     0  909
+## 5475        0.046137708   0.046137708     0 8121
+## 5476        0.191979450   0.191979450     0 6299
+## 5477        0.015099056   0.015099056     0 7175
+## 5478        0.035190091   0.035190091     0 4665
+## 5479        0.261311028   0.261311028     0 1873
+## 5480        0.682416127   0.682416127     1 5478
+## 5481        0.420811091   0.420811091     0 1130
+## 5482        0.072132888   0.072132888     0 6601
+## 5483        0.083813541   0.083813541     0 6330
+## 5484        0.050912835   0.050912835     0 5763
+## 5485        0.549667377   0.549667377     1 6254
+## 5486        0.385567915   0.385567915     0 5639
+## 5487        0.011122900   0.011122900     0 1805
+## 5488        0.208262511   0.208262511     0 2638
+## 5489        0.067469789   0.067469789     0 1055
+## 5490        0.172219426   0.172219426     0 8224
+## 5491        0.487742182   0.487742182     0  119
+## 5492        0.054049652   0.054049652     0 6357
+## 5493        0.135088197   0.135088197     0 2549
+## 5494        0.088182326   0.088182326     0 5684
+## 5495        0.040345093   0.040345093     0 7862
+## 5496        0.305051496   0.305051496     0 1643
+## 5497        0.177117385   0.177117385     0 6938
+## 5498        0.178745798   0.178745798     0 5224
+## 5499        0.060554566   0.060554566     0 3054
+## 5500        0.077178448   0.077178448     0 6883
+## 5501        0.120569129   0.120569129     0 2300
+## 5502        0.132849803   0.132849803     0 2705
+## 5503        0.108378872   0.108378872     0 7724
+## 5504        0.163311576   0.163311576     0 7468
+## 5505        0.132466027   0.132466027     0  697
+## 5506        0.037589888   0.037589888     0  492
+## 5507        0.706025409   0.706025409     1 1248
+## 5508        0.200208277   0.200208277     0 5192
+## 5509        0.110885636   0.110885636     0 3810
+## 5510        0.018519019   0.018519019     0 7166
+## 5511        0.077402293   0.077402293     0 1452
+## 5512        0.029737887   0.029737887     0 3848
+## 5513        0.227210600   0.227210600     0 2863
+## 5514        0.323213971   0.323213971     0 6119
+## 5515        0.100035277   0.100035277     0 7767
+## 5516        0.222049858   0.222049858     0 3473
+## 5517        0.214785578   0.214785578     0 1541
+## 5518        0.036370184   0.036370184     0 3313
+## 5519        0.021108845   0.021108845     0 4519
+## 5520        0.111060281   0.111060281     0 4009
+## 5521        0.176358567   0.176358567     0 1980
+## 5522        0.256870946   0.256870946     0 3951
+## 5523        0.188148194   0.188148194     0 7261
+## 5524        0.106715031   0.106715031     0  888
+## 5525        0.252075086   0.252075086     0  666
+## 5526        0.179192554   0.179192554     0 5604
+## 5527        0.188014396   0.188014396     0 6261
+## 5528        0.164318184   0.164318184     0 8175
+## 5529        0.128418885   0.128418885     0 5238
+## 5530        0.193132815   0.193132815     0 7720
+## 5531        0.537493588   0.537493588     1 6305
+## 5532        0.105254023   0.105254023     0 2853
+## 5533        0.282317476   0.282317476     0 5855
+## 5534        0.293745048   0.293745048     0 1856
+## 5535        0.020570093   0.020570093     0 7814
+## 5536        0.016349960   0.016349960     0 3760
+## 5537        0.118849966   0.118849966     0 4364
+## 5538        0.561900863   0.561900863     1 5259
+## 5539        0.189127494   0.189127494     0 7944
+## 5540        0.033369517   0.033369517     0 7892
+## 5541        0.134054321   0.134054321     0  826
+## 5542        0.533350431   0.533350431     1 2139
+## 5543        0.305097922   0.305097922     0 4449
+## 5544        0.047490097   0.047490097     0 4691
+## 5545        0.031358727   0.031358727     0 2984
+## 5546        0.138268467   0.138268467     0 5381
+## 5547        0.054839191   0.054839191     0  261
+## 5548        0.021493817   0.021493817     0 2167
+## 5549        0.033163118   0.033163118     0 2615
+## 5550        0.081148568   0.081148568     0 3674
+## 5551        0.497186455   0.497186455     0  312
+## 5552        0.098974492   0.098974492     0 4741
+## 5553        0.152082486   0.152082486     0 5910
+## 5554        0.048902634   0.048902634     0 7802
+## 5555        0.255706662   0.255706662     0 6560
+## 5556        0.484730752   0.484730752     0 1942
+## 5557        0.049607553   0.049607553     0 4316
+## 5558        0.305492738   0.305492738     0 3234
+## 5559        0.166306382   0.166306382     0 8274
+## 5560        0.124237279   0.124237279     0  958
+## 5561        0.294776922   0.294776922     0 1775
+## 5562        0.097873397   0.097873397     0 8088
+## 5563        0.067907074   0.067907074     0 2657
+## 5564        0.209385316   0.209385316     0 2391
+## 5565        0.087002265   0.087002265     0 4381
+## 5566        0.038032873   0.038032873     0 2413
+## 5567        0.249831796   0.249831796     0  595
+## 5568        0.099860973   0.099860973     0 8089
+## 5569        0.040026208   0.040026208     0  599
+## 5570        0.251629487   0.251629487     0 7989
+## 5571        0.129834691   0.129834691     0  450
+## 5572        0.285017279   0.285017279     0 6028
+## 5573        0.296894496   0.296894496     0 5939
+## 5574        0.040484045   0.040484045     0 4188
+## 5575        0.024730407   0.024730407     0  615
+## 5576        0.392308400   0.392308400     0 7154
+## 5577        0.175416592   0.175416592     0 2677
+## 5578        0.172332919   0.172332919     0  875
+## 5579        0.410530271   0.410530271     0 6646
+## 5580        0.493900031   0.493900031     0 6911
+## 5581        0.243611528   0.243611528     0 5941
+## 5582        0.300457813   0.300457813     0  192
+## 5583        0.011090272   0.011090272     0 7419
+## 5584        0.131504663   0.131504663     0 4978
+## 5585        0.033577899   0.033577899     0 7900
+## 5586        0.295203619   0.295203619     0 3246
+## 5587        0.112719696   0.112719696     0 6209
+## 5588        0.014637245   0.014637245     0 7930
+## 5589        0.055215470   0.055215470     0 8371
+## 5590        0.498232955   0.498232955     0 6173
+## 5591        0.501595586   0.501595586     1  196
+## 5592        0.099131678   0.099131678     0 7597
+## 5593        0.113801723   0.113801723     0 1303
+## 5594        0.690013404   0.690013404     1 7230
+## 5595        0.263127952   0.263127952     0 1634
+## 5596        0.123846024   0.123846024     0 2021
+## 5597        0.206507465   0.206507465     0 3957
+## 5598        0.031864736   0.031864736     0 7306
+## 5599        0.032458643   0.032458643     0 4926
+## 5600        0.085461368   0.085461368     0 2766
+## 5601        0.217829899   0.217829899     0 2128
+## 5602        0.143516965   0.143516965     0 3240
+## 5603        0.104764283   0.104764283     0 4189
+## 5604        0.077711585   0.077711585     0 2195
+## 5605        0.111220861   0.111220861     0 7771
+## 5606        0.293409788   0.293409788     0 7746
+## 5607        0.470122028   0.470122028     0 4695
+## 5608        0.228021787   0.228021787     0  938
+## 5609        0.069298525   0.069298525     0 2814
+## 5610        0.149766336   0.149766336     0 3580
+## 5611        0.434183946   0.434183946     0  680
+## 5612        0.355137209   0.355137209     0 5069
+## 5613        0.031094618   0.031094618     0 7538
+## 5614        0.494247842   0.494247842     0 3343
+## 5615        0.113773894   0.113773894     0 4202
+## 5616        0.708867416   0.708867416     1 7273
+## 5617        0.315976799   0.315976799     0 5840
+## 5618        0.030903112   0.030903112     0   57
+## 5619        0.162829152   0.162829152     0  471
+## 5620        0.084707814   0.084707814     0 2736
+## 5621        0.054453802   0.054453802     0 3299
+## 5622        0.059587143   0.059587143     0  743
+## 5623        0.045768222   0.045768222     0 6089
+## 5624        0.016183119   0.016183119     0 1362
+## 5625        0.411314924   0.411314924     0 5946
+## 5626        0.084164785   0.084164785     0 3736
+## 5627        0.346970331   0.346970331     0  673
+## 5628        0.187306199   0.187306199     0 1588
+## 5629        0.023053951   0.023053951     0 1587
+## 5630        0.085353858   0.085353858     0 2886
+## 5631        0.082382923   0.082382923     0 7136
+## 5632        0.024943914   0.024943914     0 6290
+## 5633        0.053103350   0.053103350     0 6212
+## 5634        0.009692319   0.009692319     0 7147
+## 5635        0.241042304   0.241042304     0 2249
+## 5636        0.063922349   0.063922349     0 8214
+## 5637        0.244878095   0.244878095     0 4590
+## 5638        0.844341380   0.844341380     1 6270
+## 5639        0.057927990   0.057927990     0 4119
+## 5640        0.170179857   0.170179857     0 7388
+## 5641        0.310003435   0.310003435     0 7568
+## 5642        0.065216609   0.065216609     0 5877
+## 5643        0.098937060   0.098937060     0 4331
+## 5644        0.179554745   0.179554745     0 3227
+## 5645        0.054946713   0.054946713     0 7420
+## 5646        0.153388016   0.153388016     0 6689
+## 5647        0.068255795   0.068255795     0 4618
+## 5648        0.397109144   0.397109144     0 2900
+## 5649        0.702704514   0.702704514     1 1290
+## 5650        0.038565538   0.038565538     0 2806
+## 5651        0.310268767   0.310268767     0  470
+## 5652        0.011332836   0.011332836     0 7921
+## 5653        0.456258808   0.456258808     0 3220
+## 5654        0.129562835   0.129562835     0  795
+## 5655        0.056256172   0.056256172     0 2942
+## 5656        0.064363173   0.064363173     0 4069
+## 5657        0.047890674   0.047890674     0 3849
+## 5658        0.120116183   0.120116183     0 7666
+## 5659        0.359086300   0.359086300     0  689
+## 5660        0.312898483   0.312898483     0 3372
+## 5661        0.322574394   0.322574394     0 2630
+## 5662        0.056528040   0.056528040     0 2072
+## 5663        0.193797453   0.193797453     0 7335
+## 5664        0.108019983   0.108019983     0 2645
+## 5665        0.053286932   0.053286932     0  670
+## 5666        0.052083648   0.052083648     0 7769
+## 5667        0.086422923   0.086422923     0 2943
+## 5668        0.157436336   0.157436336     0  904
+## 5669        0.045845537   0.045845537     0 3414
+## 5670        0.313196513   0.313196513     0 6106
+## 5671        0.182151910   0.182151910     0 5168
+## 5672        0.025041647   0.025041647     0 1947
+## 5673        0.164268450   0.164268450     0 4220
+## 5674        0.198264002   0.198264002     0 3811
+## 5675        0.243987662   0.243987662     0 3263
+## 5676        0.045030481   0.045030481     0 7884
+## 5677        0.043562245   0.043562245     0 1666
+## 5678        0.181053302   0.181053302     0 2678
+## 5679        0.032096044   0.032096044     0 4656
+## 5680        0.169185400   0.169185400     0 8197
+## 5681        0.025877576   0.025877576     0 7550
+## 5682        0.170862513   0.170862513     0 6917
+## 5683        0.826113970   0.826113970     1 1710
+## 5684        0.178468601   0.178468601     0 7692
+## 5685        0.051685598   0.051685598     0 2423
+## 5686        0.048715636   0.048715636     0 4828
+## 5687        0.045633579   0.045633579     0 1858
+## 5688        0.084907289   0.084907289     0 7424
+## 5689        0.033734739   0.033734739     0  879
+## 5690        0.228144788   0.228144788     0 1430
+## 5691        0.080481305   0.080481305     0 2376
+## 5692        0.436300168   0.436300168     0 4083
+## 5693        0.319209033   0.319209033     0  910
+## 5694        0.125906761   0.125906761     0 7563
+## 5695        0.288791656   0.288791656     0 6132
+## 5696        0.076088329   0.076088329     0 4129
+## 5697        0.243371877   0.243371877     0 7459
+## 5698        0.233297042   0.233297042     0 1258
+## 5699        0.249727647   0.249727647     0 5856
+## 5700        0.139478428   0.139478428     0 4731
+## 5701        0.131745401   0.131745401     0 3406
+## 5702        0.204848601   0.204848601     0 7277
+## 5703        0.023996440   0.023996440     0 7890
+## 5704        0.256058569   0.256058569     0 4053
+## 5705        0.015340783   0.015340783     0 2319
+## 5706        0.189684643   0.189684643     0 5261
+## 5707        0.051159851   0.051159851     0 2521
+## 5708        0.054041126   0.054041126     0  893
+## 5709        0.286247872   0.286247872     0 6353
+## 5710        0.101865071   0.101865071     0 1500
+## 5711        0.304979137   0.304979137     0   70
+## 5712        0.130885364   0.130885364     0 3824
+## 5713        0.009440436   0.009440436     0  201
+## 5714        0.106237612   0.106237612     0 5692
+## 5715        0.045065913   0.045065913     0 1542
+## 5716        0.023193715   0.023193715     0 4827
+## 5717        0.159707193   0.159707193     0 7502
+## 5718        0.025436112   0.025436112     0 6195
+## 5719        0.182826352   0.182826352     0 4717
+## 5720        0.051645965   0.051645965     0 7022
+## 5721        0.157788476   0.157788476     0 6677
+## 5722        0.214771128   0.214771128     0   87
+## 5723        0.218497191   0.218497191     0 3102
+## 5724        0.166534964   0.166534964     0 3005
+## 5725        0.193589327   0.193589327     0 6466
+## 5726        0.044916763   0.044916763     0 5962
+## 5727        0.199534168   0.199534168     0 3551
+## 5728        0.300340361   0.300340361     0 1108
+## 5729        0.013049691   0.013049691     0  618
+## 5730        0.453743589   0.453743589     0 1591
+## 5731        0.043022221   0.043022221     0  725
+## 5732        0.038477415   0.038477415     0 6194
+## 5733        0.126338778   0.126338778     0 8067
+## 5734        0.620728387   0.620728387     1 6701
+## 5735        0.481699351   0.481699351     0 6969
+## 5736        0.060985606   0.060985606     0  223
+## 5737        0.139517712   0.139517712     0  589
+## 5738        0.411477030   0.411477030     0 1117
+## 5739        0.085754303   0.085754303     0 6231
+## 5740        0.045975904   0.045975904     0 5771
+## 5741        0.144765727   0.144765727     0 1076
+## 5742        0.209148200   0.209148200     0 3660
+## 5743        0.515067560   0.515067560     1 5935
+## 5744        0.027068844   0.027068844     0 5391
+## 5745        0.007456189   0.007456189     0 1345
+## 5746        0.200261313   0.200261313     0 4339
+## 5747        0.022675204   0.022675204     0 2804
+## 5748        0.122581043   0.122581043     0 2876
+## 5749        0.167363030   0.167363030     0 1515
+## 5750        0.031820676   0.031820676     0 4159
+## 5751        0.438717461   0.438717461     0 7570
+## 5752        0.076570356   0.076570356     0 1973
+## 5753        0.224766002   0.224766002     0 3830
+## 5754        0.029107865   0.029107865     0 6574
+## 5755        0.078957236   0.078957236     0 4649
+## 5756        0.120455235   0.120455235     0 2003
+## 5757        0.016065211   0.016065211     0 8041
+## 5758        0.322877659   0.322877659     0  930
+## 5759        0.080774934   0.080774934     0 1075
+## 5760        0.661185541   0.661185541     1 2895
+## 5761        0.187138941   0.187138941     0 7368
+## 5762        0.065404096   0.065404096     0 7430
+## 5763        0.102922318   0.102922318     0 4481
+## 5764        0.047704624   0.047704624     0  385
+## 5765        0.011110585   0.011110585     0 6790
+## 5766        0.210289610   0.210289610     0 5655
+## 5767        0.273201582   0.273201582     0 3257
+## 5768        0.171130977   0.171130977     0 5094
+## 5769        0.147385533   0.147385533     0 3698
+## 5770        0.122185939   0.122185939     0 2640
+## 5771        0.082806314   0.082806314     0 3312
+## 5772        0.010452081   0.010452081     0 7918
+## 5773        0.837187766   0.837187766     1 8173
+## 5774        0.255918457   0.255918457     0 6239
+## 5775        0.195071235   0.195071235     0 5582
+## 5776        0.441006008   0.441006008     0 3487
+## 5777        0.194579806   0.194579806     0 4894
+## 5778        0.304044232   0.304044232     0 2026
+## 5779        0.083384704   0.083384704     0 4562
+## 5780        0.208584220   0.208584220     0 2192
+## 5781        0.108172567   0.108172567     0 2726
+## 5782        0.175763501   0.175763501     0 2715
+## 5783        0.203162401   0.203162401     0 6006
+## 5784        0.040930538   0.040930538     0 6005
+## 5785        0.236802927   0.236802927     0 4323
+## 5786        0.394539345   0.394539345     0 2747
+## 5787        0.164401468   0.164401468     0 6297
+## 5788        0.096045316   0.096045316     0 2302
+## 5789        0.057971793   0.057971793     0 5309
+## 5790        0.175087995   0.175087995     0 7748
+## 5791        0.056504840   0.056504840     0 2812
+## 5792        0.178649291   0.178649291     0 2295
+## 5793        0.026406131   0.026406131     0  428
+## 5794        0.078071659   0.078071659     0  155
+## 5795        0.301263857   0.301263857     0 5271
+## 5796        0.506721364   0.506721364     1 1940
+## 5797        0.058313450   0.058313450     0 4403
+## 5798        0.131515994   0.131515994     0 1041
+## 5799        0.268857107   0.268857107     0  144
+## 5800        0.010991278   0.010991278     0 2159
+## 5801        0.269639450   0.269639450     0 4373
+## 5802        0.067072739   0.067072739     0 5801
+## 5803        0.094630294   0.094630294     0 4121
+## 5804        0.013222198   0.013222198     0 4243
+## 5805        0.053977903   0.053977903     0  566
+## 5806        0.506751173   0.506751173     1 4725
+## 5807        0.164728376   0.164728376     0 6843
+## 5808        0.197001977   0.197001977     0 5821
+## 5809        0.177213895   0.177213895     0 7687
+## 5810        0.128390405   0.128390405     0 5494
+## 5811        0.211669858   0.211669858     0 5631
+## 5812        0.207000744   0.207000744     0 1777
+## 5813        0.080421637   0.080421637     0 4161
+## 5814        0.069950755   0.069950755     0 5398
+## 5815        0.115150247   0.115150247     0 6552
+## 5816        0.749487778   0.749487778     1 4713
+## 5817        0.083710014   0.083710014     0  708
+## 5818        0.207505518   0.207505518     0 6264
+## 5819        0.188336765   0.188336765     0 2268
+## 5820        0.145767705   0.145767705     0 1131
+## 5821        0.106548931   0.106548931     0  493
+## 5822        0.355824177   0.355824177     0 3080
+## 5823        0.139496118   0.139496118     0 5961
+## 5824        0.064549454   0.064549454     0 1185
+## 5825        0.345619785   0.345619785     0 3394
+## 5826        0.431070718   0.431070718     0 5079
+## 5827        0.056309135   0.056309135     0 7251
+## 5828        0.153364490   0.153364490     0 5616
+## 5829        0.049392447   0.049392447     0 6849
+## 5830        0.257892204   0.257892204     0 5151
+## 5831        0.082595165   0.082595165     0 3914
+## 5832        0.871641571   0.871641571     1 6604
+## 5833        0.094284191   0.094284191     0 2973
+## 5834        0.168403165   0.168403165     0 4594
+## 5835        0.178658814   0.178658814     0 3993
+## 5836        0.048560065   0.048560065     0 3774
+## 5837        0.082408739   0.082408739     0 3020
+## 5838        0.204179244   0.204179244     0 1060
+## 5839        0.175470008   0.175470008     0 1961
+## 5840        0.196071152   0.196071152     0  445
+## 5841        0.036270517   0.036270517     0 4332
+## 5842        0.171417051   0.171417051     0 8340
+## 5843        0.539750196   0.539750196     1 5952
+## 5844        0.052111038   0.052111038     0 4064
+## 5845        0.111997347   0.111997347     0 7751
+## 5846        0.232852693   0.232852693     0 5652
+## 5847        0.224454566   0.224454566     0 1977
+## 5848        0.305886880   0.305886880     0 1519
+## 5849        0.574617623   0.574617623     1 2480
+## 5850        0.448810804   0.448810804     0 3984
+## 5851        0.261517568   0.261517568     0 5222
+## 5852        0.278091025   0.278091025     0 6626
+## 5853        0.071276042   0.071276042     0 3188
+## 5854        0.112881530   0.112881530     0 7717
+## 5855        0.029780743   0.029780743     0  178
+## 5856        0.037142133   0.037142133     0 6010
+## 5857        0.019822005   0.019822005     0 3599
+## 5858        0.160983379   0.160983379     0 4415
+## 5859        0.174193306   0.174193306     0 2838
+## 5860        0.265473558   0.265473558     0 2477
+## 5861        0.165385278   0.165385278     0 3485
+## 5862        0.179685424   0.179685424     0 7698
+## 5863        0.291309167   0.291309167     0 6563
+## 5864        0.455568437   0.455568437     0 6894
+## 5865        0.288600546   0.288600546     0 6587
+## 5866        0.511862764   0.511862764     1 5199
+## 5867        0.120941517   0.120941517     0 7190
+## 5868        0.264814961   0.264814961     0  998
+## 5869        0.290493876   0.290493876     0 2396
+## 5870        0.523268300   0.523268300     1 6971
+## 5871        0.461534844   0.461534844     0 5418
+## 5872        0.243617116   0.243617116     0 7404
+## 5873        0.412602662   0.412602662     0 1428
+## 5874        0.040319852   0.040319852     0 1179
+## 5875        0.644706079   0.644706079     1 4103
+## 5876        0.098935835   0.098935835     0 2438
+## 5877        0.093255982   0.093255982     0 6831
+## 5878        0.124913986   0.124913986     0 4019
+## 5879        0.164724014   0.164724014     0 2741
+## 5880        0.021061784   0.021061784     0 5965
+## 5881        0.177960165   0.177960165     0 1411
+## 5882        0.059187417   0.059187417     0 4487
+## 5883        0.215083049   0.215083049     0 2134
+## 5884        0.136954128   0.136954128     0 5781
+## 5885        0.020643973   0.020643973     0 8155
+## 5886        0.018895648   0.018895648     0 2541
+## 5887        0.083742338   0.083742338     0  161
+## 5888        0.230164491   0.230164491     0 6318
+## 5889        0.049746785   0.049746785     0 7718
+## 5890        0.147614076   0.147614076     0 6284
+## 5891        0.556788667   0.556788667     1 6120
+## 5892        0.247721145   0.247721145     0 2870
+## 5893        0.258051019   0.258051019     0 3915
+## 5894        0.060140279   0.060140279     0 6769
+## 5895        0.281416045   0.281416045     0 3877
+## 5896        0.157088556   0.157088556     0 6961
+## 5897        0.435831538   0.435831538     0 4154
+## 5898        0.224122459   0.224122459     0 4355
+## 5899        0.046615531   0.046615531     0 1771
+## 5900        0.032677894   0.032677894     0 7271
+## 5901        0.198444945   0.198444945     0   49
+## 5902        0.307541368   0.307541368     0  767
+## 5903        0.102288075   0.102288075     0 2023
+## 5904        0.057203458   0.057203458     0  154
+## 5905        0.193726543   0.193726543     0 2636
+## 5906        0.050458197   0.050458197     0 3260
+## 5907        0.177610634   0.177610634     0 3614
+## 5908        0.218946321   0.218946321     0 3167
+## 5909        0.087248393   0.087248393     0 7018
+## 5910        0.171754946   0.171754946     0 3067
+## 5911        0.079341735   0.079341735     0 6549
+## 5912        0.262601014   0.262601014     0 7542
+## 5913        0.085202430   0.085202430     0   31
+## 5914        0.076229787   0.076229787     0  503
+## 5915        0.057867091   0.057867091     0 4693
+## 5916        0.108131585   0.108131585     0 7794
+## 5917        0.050881365   0.050881365     0 4277
+## 5918        0.062655674   0.062655674     0 4514
+## 5919        0.420384979   0.420384979     0 4050
+## 5920        0.129484273   0.129484273     0 7965
+## 5921        0.036618044   0.036618044     0 1082
+## 5922        0.154829879   0.154829879     0  706
+## 5923        0.322013972   0.322013972     0 1252
+## 5924        0.241483542   0.241483542     0 7656
+## 5925        0.059550571   0.059550571     0 3476
+## 5926        0.115630832   0.115630832     0 1268
+## 5927        0.031773899   0.031773899     0 2725
+## 5928        0.072751039   0.072751039     0 2753
+## 5929        0.397224506   0.397224506     0 4569
+## 5930        0.176577748   0.176577748     0 7003
+## 5931        0.017549902   0.017549902     0 1262
+## 5932        0.194829660   0.194829660     0 1326
+## 5933        0.388873285   0.388873285     0  111
+## 5934        0.048222580   0.048222580     0 4278
+## 5935        0.027076065   0.027076065     0 7658
+## 5936        0.130796156   0.130796156     0 1638
+## 5937        0.290215815   0.290215815     0 5738
+## 5938        0.255275181   0.255275181     0 3074
+## 5939        0.181710347   0.181710347     0 7968
+## 5940        0.174583450   0.174583450     0 7098
+## 5941        0.569314152   0.569314152     1 4767
+## 5942        0.061069169   0.061069169     0 7465
+## 5943        0.017156941   0.017156941     0 6413
+## 5944        0.356129258   0.356129258     0 5916
+## 5945        0.140188305   0.140188305     0 2091
+## 5946        0.028120761   0.028120761     0 3231
+## 5947        0.032347798   0.032347798     0  724
+## 5948        0.034390474   0.034390474     0 4677
+## 5949        0.014970596   0.014970596     0 1464
+## 5950        0.351343918   0.351343918     0 2056
+## 5951        0.047514152   0.047514152     0 6103
+## 5952        0.197128534   0.197128534     0 2407
+## 5953        0.050785597   0.050785597     0 2952
+## 5954        0.072717066   0.072717066     0 6654
+## 5955        0.011385954   0.011385954     0 2375
+## 5956        0.274389246   0.274389246     0 8301
+## 5957        0.271218496   0.271218496     0 7330
+## 5958        0.244092129   0.244092129     0 3770
+## 5959        0.369356717   0.369356717     0 3111
+## 5960        0.130142747   0.130142747     0 7142
+## 5961        0.062609728   0.062609728     0 1511
+## 5962        0.015244491   0.015244491     0 7212
+## 5963        0.031726480   0.031726480     0 5205
+## 5964        0.064588210   0.064588210     0  164
+## 5965        0.013502672   0.013502672     0 2522
+## 5966        0.100716857   0.100716857     0  343
+## 5967        0.566368393   0.566368393     1 1065
+## 5968        0.603494923   0.603494923     1 3239
+## 5969        0.044197096   0.044197096     0 1894
+## 5970        0.105286517   0.105286517     0 3274
+## 5971        0.252622488   0.252622488     0 5944
+## 5972        0.126500632   0.126500632     0 6581
+## 5973        0.086302808   0.086302808     0 5081
+## 5974        0.211837336   0.211837336     0   55
+## 5975        0.039474714   0.039474714     0 3200
+## 5976        0.060764571   0.060764571     0 2945
+## 5977        0.215953340   0.215953340     0 4738
+## 5978        0.179191373   0.179191373     0 6448
+## 5979        0.023132928   0.023132928     0 3455
+## 5980        0.217814192   0.217814192     0 4872
+## 5981        0.323739666   0.323739666     0 7172
+## 5982        0.123809989   0.123809989     0 4648
+## 5983        0.564093370   0.564093370     1 7678
+## 5984        0.246874281   0.246874281     0 4823
+## 5985        0.243256905   0.243256905     0 6628
+## 5986        0.837069556   0.837069556     1 6671
+## 5987        0.219047123   0.219047123     0 6052
+## 5988        0.152885556   0.152885556     0 8328
+## 5989        0.093133618   0.093133618     0 4613
+## 5990        0.151877520   0.151877520     0 7128
+## 5991        0.415006569   0.415006569     0 5669
+## 5992        0.021407753   0.021407753     0 2230
+## 5993        0.288025314   0.288025314     0 4674
+## 5994        0.297306598   0.297306598     0 3366
+## 5995        0.714100169   0.714100169     1 4863
+## 5996        0.265796955   0.265796955     0 1633
+## 5997        0.057655971   0.057655971     0 2326
+## 5998        0.016293548   0.016293548     0 1688
+## 5999        0.360599330   0.360599330     0  576
+## 6000        0.215959704   0.215959704     0 3464</code></pre>
+<pre class="r"><code>prop.table(table(predict.model.log6$match))</code></pre>
+<pre><code>## 
+##     0     1 
+## 0.951 0.049</code></pre>
+</div>
+<div id="predictions-from-logistic-models-all-variables" class="section level3">
+<h3><span class="header-section-number">2.4.2</span> Predictions from Logistic Models (all variables)</h3>
+<pre class="r"><code>#log6 = predict.model.log6
+#log_all7 = predict.model.log_all7
+prop.table(table(test2$match))</code></pre>
+<pre><code>## 
+##     0     1 
+## 0.829 0.171</code></pre>
+<pre class="r"><code># Predict the Match Probability for the Testing Dataset using the model developed on the training dataset
+#use survival.model2
+predict.model.log_all7 = predict(log_all7, newdata = test2, type = &quot;response&quot;)
+predict.model.log_all7 = as.data.frame(predict.model.log_all7, na.rm = TRUE)
+predict.model.log_all7$predict.model &lt;- as.numeric(predict.model.log_all7$predict.model)
+predict.model.log_all7$match &lt;- ifelse(predict.model.log_all7$predict.model &gt; 0.5, 1, 0)
+predict.model.log_all7$X &lt;- test2$X
+predict.model.log_all7</code></pre>
+<pre><code>##      predict.model.log_all7 predict.model match    X
+## 5001           3.036136e-01  3.036136e-01     0 8087
+## 5002           2.410690e-01  2.410690e-01     0 8279
+## 5003           7.892052e-02  7.892052e-02     0 2827
+## 5004           3.968961e-02  3.968961e-02     0 6186
+## 5005           1.200443e-01  1.200443e-01     0 5228
+## 5006           1.365551e-01  1.365551e-01     0 3559
+## 5007           8.205386e-02  8.205386e-02     0  818
+## 5008           9.765187e-02  9.765187e-02     0  233
+## 5009           7.351247e-02  7.351247e-02     0 2826
+## 5010           2.508698e-01  2.508698e-01     0 8101
+## 5011           3.054042e-01  3.054042e-01     0 7999
+## 5012           8.145372e-02  8.145372e-02     0 3027
+## 5013           4.389521e-01  4.389521e-01     0 1778
+## 5014           1.115347e-01  1.115347e-01     0 5157
+## 5015           2.174619e-01  2.174619e-01     0 6306
+## 5016           2.841434e-01  2.841434e-01     0 3583
+## 5017           2.112463e-01  2.112463e-01     0 3400
+## 5018           3.360398e-01  3.360398e-01     0  123
+## 5019           2.160172e-02  2.160172e-02     0 1370
+## 5020           4.142711e-01  4.142711e-01     0 1127
+## 5021           2.453484e-01  2.453484e-01     0 7007
+## 5022           7.397956e-02  7.397956e-02     0 7222
+## 5023           4.964229e-01  4.964229e-01     0 3900
+## 5024           2.868528e-01  2.868528e-01     0 2902
+## 5025           1.234470e-01  1.234470e-01     0 1136
+## 5026           5.899319e-02  5.899319e-02     0 7366
+## 5027           2.266799e-01  2.266799e-01     0 4698
+## 5028           2.182389e-01  2.182389e-01     0 5574
+## 5029           7.246629e-02  7.246629e-02     0 7012
+## 5030           1.317152e-01  1.317152e-01     0 7707
+## 5031           4.167667e-02  4.167667e-02     0  563
+## 5032           2.971717e-02  2.971717e-02     0 6634
+## 5033           4.254500e-01  4.254500e-01     0 7253
+## 5034           1.299757e-01  1.299757e-01     0 3329
+## 5035           4.076575e-02  4.076575e-02     0 1206
+## 5036           5.505369e-03  5.505369e-03     0  549
+## 5037           1.513800e-01  1.513800e-01     0 2197
+## 5038           7.035580e-02  7.035580e-02     0  448
+## 5039           8.552274e-02  8.552274e-02     0 3061
+## 5040           4.991652e-01  4.991652e-01     0 4765
+## 5041           2.855309e-01  2.855309e-01     0 5725
+## 5042           1.541773e-01  1.541773e-01     0 2294
+## 5043           7.714761e-02  7.714761e-02     0 7803
+## 5044           5.456664e-01  5.456664e-01     1  945
+## 5045           1.032581e-01  1.032581e-01     0 8207
+## 5046           4.650239e-01  4.650239e-01     0 3577
+## 5047           1.750699e-01  1.750699e-01     0 6553
+## 5048           6.160052e-02  6.160052e-02     0 2248
+## 5049           1.563475e-01  1.563475e-01     0 5522
+## 5050           5.611988e-02  5.611988e-02     0  395
+## 5051           2.956190e-02  2.956190e-02     0 4599
+## 5052           9.774628e-02  9.774628e-02     0 1918
+## 5053           1.567836e-01  1.567836e-01     0 3446
+## 5054           3.429625e-02  3.429625e-02     0 8073
+## 5055           1.044628e-01  1.044628e-01     0 3970
+## 5056           1.436690e-02  1.436690e-02     0 4789
+## 5057           2.331006e-01  2.331006e-01     0 4203
+## 5058           1.615879e-01  1.615879e-01     0 7178
+## 5059           2.987627e-01  2.987627e-01     0 1281
+## 5060           1.326864e-01  1.326864e-01     0 1180
+## 5061           2.478194e-01  2.478194e-01     0 1566
+## 5062           6.780122e-02  6.780122e-02     0 1741
+## 5063           1.328578e-01  1.328578e-01     0 2080
+## 5064           1.978449e-01  1.978449e-01     0 2504
+## 5065           1.592858e-01  1.592858e-01     0  477
+## 5066           3.467300e-01  3.467300e-01     0 1892
+## 5067           8.515455e-02  8.515455e-02     0 8130
+## 5068           3.535350e-01  3.535350e-01     0   62
+## 5069           8.029933e-01  8.029933e-01     1 8094
+## 5070           1.144459e-01  1.144459e-01     0 1986
+## 5071           8.547870e-02  8.547870e-02     0 5972
+## 5072           7.693302e-02  7.693302e-02     0 1514
+## 5073           1.443027e-02  1.443027e-02     0 6592
+## 5074           1.881842e-01  1.881842e-01     0 7023
+## 5075           3.354793e-01  3.354793e-01     0 3128
+## 5076           3.721727e-02  3.721727e-02     0  525
+## 5077           1.309011e-01  1.309011e-01     0 8352
+## 5078           3.216684e-01  3.216684e-01     0  649
+## 5079           6.890480e-02  6.890480e-02     0 6286
+## 5080           1.382913e-01  1.382913e-01     0 4729
+## 5081           3.433993e-01  3.433993e-01     0 1609
+## 5082           1.009795e-01  1.009795e-01     0 2565
+## 5083           7.786842e-02  7.786842e-02     0 5428
+## 5084           2.578215e-01  2.578215e-01     0 2751
+## 5085           1.635393e-01  1.635393e-01     0 5412
+## 5086           7.289959e-02  7.289959e-02     0 3449
+## 5087           4.262961e-01  4.262961e-01     0 7586
+## 5088           1.696475e-01  1.696475e-01     0 7193
+## 5089           4.900526e-03  4.900526e-03     0  720
+## 5090           1.400021e-02  1.400021e-02     0 3847
+## 5091           7.935102e-02  7.935102e-02     0 7449
+## 5092           1.362045e-01  1.362045e-01     0 5597
+## 5093           1.386853e-02  1.386853e-02     0  776
+## 5094           1.618256e-01  1.618256e-01     0 4920
+## 5095           8.159926e-02  8.159926e-02     0 3447
+## 5096           1.462423e-03  1.462423e-03     0 1347
+## 5097           1.765573e-01  1.765573e-01     0 5773
+## 5098           1.599980e-01  1.599980e-01     0 5964
+## 5099           3.061094e-02  3.061094e-02     0 2836
+## 5100           1.726595e-01  1.726595e-01     0 2296
+## 5101           1.948327e-01  1.948327e-01     0 1373
+## 5102           1.819219e-02  1.819219e-02     0  380
+## 5103           3.440110e-01  3.440110e-01     0 3079
+## 5104           1.502331e-01  1.502331e-01     0 1504
+## 5105           2.135466e-01  2.135466e-01     0 6728
+## 5106           2.340352e-01  2.340352e-01     0 6233
+## 5107           4.835128e-02  4.835128e-02     0 4802
+## 5108           1.390876e-01  1.390876e-01     0 4052
+## 5109           3.863803e-01  3.863803e-01     0 6984
+## 5110           4.341316e-01  4.341316e-01     0 4703
+## 5111           9.676306e-02  9.676306e-02     0  145
+## 5112           1.889018e-02  1.889018e-02     0 6846
+## 5113           5.074134e-02  5.074134e-02     0 3506
+## 5114           2.562950e-01  2.562950e-01     0 8190
+## 5115           4.056313e-02  4.056313e-02     0 1414
+## 5116           6.092745e-01  6.092745e-01     1 4084
+## 5117           1.677833e-02  1.677833e-02     0 3509
+## 5118           5.157122e-02  5.157122e-02     0 7641
+## 5119           4.260653e-01  4.260653e-01     0 3424
+## 5120           2.026457e-01  2.026457e-01     0 3883
+## 5121           7.393797e-03  7.393797e-03     0 7286
+## 5122           4.150531e-01  4.150531e-01     0 3907
+## 5123           1.961683e-01  1.961683e-01     0 6998
+## 5124           1.437594e-01  1.437594e-01     0 2671
+## 5125           4.584227e-02  4.584227e-02     0 7352
+## 5126           5.698134e-03  5.698134e-03     0 1461
+## 5127           1.977082e-01  1.977082e-01     0 4527
+## 5128           7.376549e-02  7.376549e-02     0 6440
+## 5129           1.293545e-01  1.293545e-01     0  158
+## 5130           1.082520e-01  1.082520e-01     0 3342
+## 5131           2.769894e-01  2.769894e-01     0  135
+## 5132           1.634279e-01  1.634279e-01     0 1113
+## 5133           3.063274e-01  3.063274e-01     0 2769
+## 5134           8.004913e-02  8.004913e-02     0 6086
+## 5135           7.647461e-02  7.647461e-02     0 8055
+## 5136           1.804707e-01  1.804707e-01     0 3999
+## 5137           7.198421e-02  7.198421e-02     0 2921
+## 5138           1.671768e-02  1.671768e-02     0 1244
+## 5139           1.628012e-01  1.628012e-01     0 2586
+## 5140           5.999311e-01  5.999311e-01     1 6146
+## 5141           2.424378e-02  2.424378e-02     0 2913
+## 5142           6.074660e-01  6.074660e-01     1 1284
+## 5143           3.198971e-01  3.198971e-01     0 3062
+## 5144           7.711529e-02  7.711529e-02     0   77
+## 5145           1.456078e-01  1.456078e-01     0 4876
+## 5146           1.518429e-01  1.518429e-01     0 4495
+## 5147           1.866132e-01  1.866132e-01     0 6351
+## 5148           1.670784e-01  1.670784e-01     0 5699
+## 5149           1.638556e-02  1.638556e-02     0 2207
+## 5150           3.451303e-02  3.451303e-02     0  957
+## 5151           6.816822e-02  6.816822e-02     0  489
+## 5152           8.272712e-02  8.272712e-02     0 6688
+## 5153           5.685415e-01  5.685415e-01     1 5949
+## 5154           6.324020e-02  6.324020e-02     0 4193
+## 5155           2.464234e-03  2.464234e-03     0 6416
+## 5156           2.401958e-01  2.401958e-01     0 1104
+## 5157           2.084233e-01  2.084233e-01     0  745
+## 5158           5.678217e-01  5.678217e-01     1 6691
+## 5159           2.359483e-01  2.359483e-01     0 4272
+## 5160           1.405991e-01  1.405991e-01     0 1877
+## 5161           1.021760e-01  1.021760e-01     0 7619
+## 5162           4.224154e-01  4.224154e-01     0 6118
+## 5163           2.003586e-01  2.003586e-01     0 8092
+## 5164           1.263439e-02  1.263439e-02     0 2693
+## 5165           1.417327e-02  1.417327e-02     0 3787
+## 5166           7.983407e-02  7.983407e-02     0 4801
+## 5167           1.041806e-01  1.041806e-01     0 2996
+## 5168           3.020558e-01  3.020558e-01     0 3278
+## 5169           1.597996e-01  1.597996e-01     0 5207
+## 5170           2.407932e-01  2.407932e-01     0 5425
+## 5171           2.106335e-01  2.106335e-01     0 5065
+## 5172           2.381026e-02  2.381026e-02     0 7905
+## 5173           2.044698e-02  2.044698e-02     0 2613
+## 5174           3.670320e-01  3.670320e-01     0 6899
+## 5175           2.450988e-01  2.450988e-01     0 7571
+## 5176           2.860950e-01  2.860950e-01     0 1929
+## 5177           2.840183e-01  2.840183e-01     0 1530
+## 5178           9.872031e-02  9.872031e-02     0 3697
+## 5179           1.678769e-02  1.678769e-02     0 4491
+## 5180           2.154083e-01  2.154083e-01     0 5419
+## 5181           1.519338e-02  1.519338e-02     0  727
+## 5182           5.145898e-02  5.145898e-02     0  432
+## 5183           8.678533e-02  8.678533e-02     0 7575
+## 5184           2.643384e-01  2.643384e-01     0 2334
+## 5185           7.250827e-02  7.250827e-02     0 1217
+## 5186           1.989032e-01  1.989032e-01     0 6444
+## 5187           9.797875e-02  9.797875e-02     0 5783
+## 5188           3.272701e-01  3.272701e-01     0 3539
+## 5189           9.693850e-02  9.693850e-02     0 6936
+## 5190           4.092354e-01  4.092354e-01     0 6841
+## 5191           3.782478e-01  3.782478e-01     0 2597
+## 5192           2.382105e-02  2.382105e-02     0 1640
+## 5193           2.797918e-01  2.797918e-01     0 3533
+## 5194           5.828460e-01  5.828460e-01     1 6291
+## 5195           3.839755e-02  3.839755e-02     0 2940
+## 5196           3.618127e-01  3.618127e-01     0 4176
+## 5197           1.008827e-01  1.008827e-01     0 7691
+## 5198           7.789465e-02  7.789465e-02     0 6051
+## 5199           2.634478e-01  2.634478e-01     0 4523
+## 5200           1.193839e-01  1.193839e-01     0 7629
+## 5201           3.083729e-02  3.083729e-02     0 6594
+## 5202           7.546704e-02  7.546704e-02     0 5221
+## 5203           2.940435e-01  2.940435e-01     0 3469
+## 5204           8.848868e-02  8.848868e-02     0  461
+## 5205           3.483055e-01  3.483055e-01     0 7262
+## 5206           1.237876e-01  1.237876e-01     0 2833
+## 5207           4.686604e-02  4.686604e-02     0 4319
+## 5208           8.904154e-02  8.904154e-02     0 3026
+## 5209           3.656524e-01  3.656524e-01     0  636
+## 5210           1.099428e-01  1.099428e-01     0 1100
+## 5211           7.988394e-01  7.988394e-01     1 3141
+## 5212           1.928639e-01  1.928639e-01     0 4639
+## 5213           2.685639e-01  2.685639e-01     0 4368
+## 5214           5.585196e-01  5.585196e-01     1 1601
+## 5215           1.536210e-01  1.536210e-01     0 4500
+## 5216           5.607129e-02  5.607129e-02     0 4089
+## 5217           1.408980e-01  1.408980e-01     0 4601
+## 5218           2.474090e-01  2.474090e-01     0 2016
+## 5219           3.087360e-01  3.087360e-01     0 1717
+## 5220           5.206367e-02  5.206367e-02     0 1444
+## 5221           6.573465e-03  6.573465e-03     0 3173
+## 5222           1.216566e-01  1.216566e-01     0 3703
+## 5223           5.073244e-02  5.073244e-02     0 8138
+## 5224           2.142488e-02  2.142488e-02     0 7241
+## 5225           3.904605e-01  3.904605e-01     0 2419
+## 5226           6.161319e-01  6.161319e-01     1 7094
+## 5227           1.625794e-01  1.625794e-01     0 5195
+## 5228           2.371187e-01  2.371187e-01     0 3766
+## 5229           4.514335e-02  4.514335e-02     0 2487
+## 5230           2.186268e-01  2.186268e-01     0 4451
+## 5231           2.065107e-01  2.065107e-01     0 5688
+## 5232           4.307120e-02  4.307120e-02     0 1646
+## 5233           9.479551e-02  9.479551e-02     0 3023
+## 5234           6.472526e-02  6.472526e-02     0 4438
+## 5235           4.673602e-02  4.673602e-02     0 6503
+## 5236           7.487668e-02  7.487668e-02     0 3107
+## 5237           9.143114e-02  9.143114e-02     0 4132
+## 5238           1.086594e-01  1.086594e-01     0  338
+## 5239           2.689426e-01  2.689426e-01     0 5175
+## 5240           7.209191e-03  7.209191e-03     0  715
+## 5241           3.807255e-02  3.807255e-02     0 7527
+## 5242           1.586227e-01  1.586227e-01     0 1883
+## 5243           1.677463e-01  1.677463e-01     0 8023
+## 5244           9.115525e-02  9.115525e-02     0  168
+## 5245           2.855781e-01  2.855781e-01     0  163
+## 5246           8.217556e-02  8.217556e-02     0 6321
+## 5247           2.686952e-01  2.686952e-01     0 5258
+## 5248           4.210898e-01  4.210898e-01     0 1424
+## 5249           3.478720e-01  3.478720e-01     0 5375
+## 5250           3.709202e-01  3.709202e-01     0  186
+## 5251           6.131383e-02  6.131383e-02     0 5959
+## 5252           3.985925e-02  3.985925e-02     0 4285
+## 5253           1.918067e-01  1.918067e-01     0 1851
+## 5254           1.653411e-01  1.653411e-01     0 2798
+## 5255           1.009993e-02  1.009993e-02     0 3840
+## 5256           4.710805e-02  4.710805e-02     0  496
+## 5257           7.386481e-01  7.386481e-01     1  705
+## 5258           9.080802e-02  9.080802e-02     0 4135
+## 5259           4.409242e-02  4.409242e-02     0 2366
+## 5260           8.495081e-01  8.495081e-01     1 6269
+## 5261           9.364239e-02  9.364239e-02     0 3977
+## 5262           3.533208e-01  3.533208e-01     0 5632
+## 5263           1.579415e-01  1.579415e-01     0 1036
+## 5264           4.461885e-01  4.461885e-01     0 5893
+## 5265           6.288149e-02  6.288149e-02     0  786
+## 5266           6.563782e-02  6.563782e-02     0 6889
+## 5267           4.253436e-01  4.253436e-01     0 5281
+## 5268           3.145445e-01  3.145445e-01     0 7518
+## 5269           6.003807e-02  6.003807e-02     0 2165
+## 5270           3.612569e-01  3.612569e-01     0 4991
+## 5271           8.783688e-02  8.783688e-02     0 4600
+## 5272           2.677388e-02  2.677388e-02     0 2924
+## 5273           5.342449e-02  5.342449e-02     0 7683
+## 5274           1.533517e-01  1.533517e-01     0 2731
+## 5275           2.346173e-02  2.346173e-02     0 5614
+## 5276           3.068885e-01  3.068885e-01     0 7214
+## 5277           9.812553e-02  9.812553e-02     0 8372
+## 5278           2.679544e-02  2.679544e-02     0  213
+## 5279           1.918534e-01  1.918534e-01     0 1005
+## 5280           3.361398e-02  3.361398e-02     0 3789
+## 5281           1.887509e-01  1.887509e-01     0 4758
+## 5282           2.637525e-01  2.637525e-01     0 5544
+## 5283           9.356763e-02  9.356763e-02     0 8095
+## 5284           2.402434e-01  2.402434e-01     0 7010
+## 5285           4.136355e-02  4.136355e-02     0 3949
+## 5286           3.026289e-01  3.026289e-01     0 7966
+## 5287           1.645390e-01  1.645390e-01     0 4260
+## 5288           3.185399e-01  3.185399e-01     0 7290
+## 5289           3.845981e-01  3.845981e-01     0 6771
+## 5290           1.944084e-01  1.944084e-01     0 3254
+## 5291           3.360590e-02  3.360590e-02     0 7903
+## 5292           9.174059e-02  9.174059e-02     0 7887
+## 5293           8.695519e-02  8.695519e-02     0 3587
+## 5294           2.716929e-02  2.716929e-02     0 7171
+## 5295           2.602747e-01  2.602747e-01     0 6561
+## 5296           4.538901e-01  4.538901e-01     0 6659
+## 5297           1.068238e-01  1.068238e-01     0 5034
+## 5298           3.671668e-01  3.671668e-01     0 1068
+## 5299           5.761166e-03  5.761166e-03     0 8327
+## 5300           1.308728e-01  1.308728e-01     0 2278
+## 5301           1.724383e-02  1.724383e-02     0 2166
+## 5302           3.213039e-01  3.213039e-01     0 3778
+## 5303           2.042735e-01  2.042735e-01     0  665
+## 5304           1.621669e-01  1.621669e-01     0 4283
+## 5305           6.332536e-02  6.332536e-02     0 3383
+## 5306           2.321765e-01  2.321765e-01     0 2775
+## 5307           1.859939e-01  1.859939e-01     0  757
+## 5308           2.846822e-06  2.846822e-06     0 4977
+## 5309           8.728072e-02  8.728072e-02     0 7389
+## 5310           1.075311e-01  1.075311e-01     0 4974
+## 5311           2.529464e-01  2.529464e-01     0 2147
+## 5312           6.263320e-02  6.263320e-02     0 7772
+## 5313           1.165721e-01  1.165721e-01     0 3066
+## 5314           1.797403e-01  1.797403e-01     0 4152
+## 5315           1.750680e-01  1.750680e-01     0 7616
+## 5316           3.206658e-02  3.206658e-02     0 4836
+## 5317           1.075570e-01  1.075570e-01     0 1874
+## 5318           1.114138e-01  1.114138e-01     0 1534
+## 5319           1.068018e-01  1.068018e-01     0 2171
+## 5320           1.522497e-01  1.522497e-01     0 4244
+## 5321           3.262326e-01  3.262326e-01     0 3716
+## 5322           1.635996e-02  1.635996e-02     0 3340
+## 5323           4.829217e-01  4.829217e-01     0 5859
+## 5324           7.073278e-02  7.073278e-02     0 1978
+## 5325           5.531244e-02  5.531244e-02     0 1916
+## 5326           4.722336e-02  4.722336e-02     0 3740
+## 5327           3.685318e-02  3.685318e-02     0 5067
+## 5328           5.004409e-02  5.004409e-02     0 7860
+## 5329           1.065072e-02  1.065072e-02     0 3798
+## 5330           9.177058e-02  9.177058e-02     0 5711
+## 5331           6.763150e-02  6.763150e-02     0 2209
+## 5332           2.873777e-01  2.873777e-01     0 5875
+## 5333           2.545667e-02  2.545667e-02     0 7599
+## 5334           2.626287e-01  2.626287e-01     0 3319
+## 5335           6.891448e-02  6.891448e-02     0 6772
+## 5336           9.524060e-02  9.524060e-02     0 7797
+## 5337           4.654763e-02  4.654763e-02     0 5076
+## 5338           5.576452e-02  5.576452e-02     0 8126
+## 5339           7.850551e-02  7.850551e-02     0 8313
+## 5340           7.037484e-01  7.037484e-01     1 6111
+## 5341           7.241497e-02  7.241497e-02     0 2990
+## 5342           3.391778e-01  3.391778e-01     0  614
+## 5343           6.113782e-01  6.113782e-01     1 4696
+## 5344           1.663492e-01  1.663492e-01     0 5096
+## 5345           1.217255e-01  1.217255e-01     0 2448
+## 5346           7.612263e-02  7.612263e-02     0 3782
+## 5347           3.954428e-01  3.954428e-01     0 6272
+## 5348           1.147650e-01  1.147650e-01     0 2206
+## 5349           3.602189e-01  3.602189e-01     0 8043
+## 5350           3.293834e-01  3.293834e-01     0 6171
+## 5351           1.191807e-01  1.191807e-01     0 1879
+## 5352           6.548848e-01  6.548848e-01     1 4766
+## 5353           3.087336e-02  3.087336e-02     0 1170
+## 5354           2.620603e-01  2.620603e-01     0 3590
+## 5355           6.464953e-02  6.464953e-02     0 7556
+## 5356           5.674431e-02  5.674431e-02     0 6868
+## 5357           2.018198e-01  2.018198e-01     0 3279
+## 5358           4.187262e-02  4.187262e-02     0 3186
+## 5359           1.868911e-01  1.868911e-01     0  659
+## 5360           1.960213e-01  1.960213e-01     0 3926
+## 5361           3.879766e-02  3.879766e-02     0 6043
+## 5362           4.586479e-02  4.586479e-02     0 4298
+## 5363           3.573229e-01  3.573229e-01     0 4805
+## 5364           2.819491e-01  2.819491e-01     0 5294
+## 5365           6.306808e-02  6.306808e-02     0 5001
+## 5366           2.261020e-02  2.261020e-02     0 7017
+## 5367           3.166357e-02  3.166357e-02     0 7315
+## 5368           1.114127e-01  1.114127e-01     0 5159
+## 5369           5.195347e-02  5.195347e-02     0 3654
+## 5370           8.491431e-02  8.491431e-02     0 5674
+## 5371           2.708289e-01  2.708289e-01     0 8007
+## 5372           6.037876e-02  6.037876e-02     0 1557
+## 5373           3.469932e-02  3.469932e-02     0 4799
+## 5374           4.303810e-02  4.303810e-02     0 2184
+## 5375           1.474801e-01  1.474801e-01     0 6727
+## 5376           1.698955e-01  1.698955e-01     0 3389
+## 5377           1.121465e-01  1.121465e-01     0  658
+## 5378           5.555417e-01  5.555417e-01     1 4877
+## 5379           1.538318e-01  1.538318e-01     0 3923
+## 5380           2.237543e-02  2.237543e-02     0 7151
+## 5381           1.399376e-01  1.399376e-01     0 5279
+## 5382           6.817861e-01  6.817861e-01     1  965
+## 5383           5.389773e-02  5.389773e-02     0 1533
+## 5384           1.813927e-01  1.813927e-01     0 1334
+## 5385           2.076713e-02  2.076713e-02     0 3864
+## 5386           2.569508e-01  2.569508e-01     0  375
+## 5387           1.366545e-01  1.366545e-01     0 2994
+## 5388           8.436322e-02  8.436322e-02     0 8269
+## 5389           5.508713e-02  5.508713e-02     0 2277
+## 5390           1.040646e-01  1.040646e-01     0 7693
+## 5391           1.454189e-01  1.454189e-01     0 5852
+## 5392           2.408177e-01  2.408177e-01     0 1063
+## 5393           2.282080e-01  2.282080e-01     0 5326
+## 5394           1.787560e-01  1.787560e-01     0 3871
+## 5395           9.154328e-02  9.154328e-02     0 2512
+## 5396           1.206771e-01  1.206771e-01     0 4305
+## 5397           3.845149e-01  3.845149e-01     0 7236
+## 5398           2.017168e-02  2.017168e-02     0 1264
+## 5399           6.398845e-02  6.398845e-02     0  619
+## 5400           3.997198e-02  3.997198e-02     0 4540
+## 5401           1.787547e-01  1.787547e-01     0 6251
+## 5402           3.072420e-01  3.072420e-01     0 1475
+## 5403           1.343617e-01  1.343617e-01     0 2899
+## 5404           1.489717e-02  1.489717e-02     0  460
+## 5405           4.144618e-03  4.144618e-03     0 4575
+## 5406           1.587835e-01  1.587835e-01     0 6806
+## 5407           2.893251e-02  2.893251e-02     0 5359
+## 5408           7.303375e-02  7.303375e-02     0  594
+## 5409           5.371785e-01  5.371785e-01     1 4661
+## 5410           3.576549e-01  3.576549e-01     0 6225
+## 5411           2.242506e-01  2.242506e-01     0 4209
+## 5412           1.999867e-01  1.999867e-01     0 5100
+## 5413           2.994849e-01  2.994849e-01     0 2126
+## 5414           2.167860e-01  2.167860e-01     0 5672
+## 5415           7.713477e-02  7.713477e-02     0 3994
+## 5416           2.294005e-01  2.294005e-01     0  876
+## 5417           2.368345e-01  2.368345e-01     0 3486
+## 5418           1.340193e-01  1.340193e-01     0 6537
+## 5419           3.786022e-02  3.786022e-02     0 2770
+## 5420           4.280895e-01  4.280895e-01     0 7005
+## 5421           6.174254e-02  6.174254e-02     0 4558
+## 5422           2.830011e-01  2.830011e-01     0 3555
+## 5423           1.840948e-01  1.840948e-01     0 3028
+## 5424           5.371275e-02  5.371275e-02     0 1486
+## 5425           9.172585e-02  9.172585e-02     0 3515
+## 5426           4.025554e-01  4.025554e-01     0 3283
+## 5427           9.287014e-02  9.287014e-02     0 6812
+## 5428           2.289373e-02  2.289373e-02     0 6509
+## 5429           1.821563e-01  1.821563e-01     0 4137
+## 5430           2.732055e-01  2.732055e-01     0 1197
+## 5431           2.454211e-01  2.454211e-01     0 8312
+## 5432           3.179146e-02  3.179146e-02     0 3903
+## 5433           3.046620e-01  3.046620e-01     0 1517
+## 5434           4.027910e-01  4.027910e-01     0 6079
+## 5435           9.329462e-02  9.329462e-02     0 4241
+## 5436           1.426107e-01  1.426107e-01     0 4586
+## 5437           7.510282e-02  7.510282e-02     0 1380
+## 5438           1.215381e-01  1.215381e-01     0  790
+## 5439           4.661095e-02  4.661095e-02     0 2773
+## 5440           1.001034e-01  1.001034e-01     0 8172
+## 5441           1.080209e-01  1.080209e-01     0 5243
+## 5442           8.357010e-02  8.357010e-02     0 6988
+## 5443           9.584011e-02  9.584011e-02     0 1415
+## 5444           4.240417e-02  4.240417e-02     0 4476
+## 5445           8.233320e-02  8.233320e-02     0 4191
+## 5446           1.569071e-01  1.569071e-01     0 5275
+## 5447           1.320248e-01  1.320248e-01     0 5567
+## 5448           2.946077e-02  2.946077e-02     0 1098
+## 5449           6.014321e-02  6.014321e-02     0 5715
+## 5450           3.144048e-02  3.144048e-02     0 4117
+## 5451           4.655979e-02  4.655979e-02     0  497
+## 5452           4.747489e-02  4.747489e-02     0 3775
+## 5453           1.047497e-01  1.047497e-01     0 3567
+## 5454           1.381205e-01  1.381205e-01     0 4448
+## 5455           8.586862e-02  8.586862e-02     0 2188
+## 5456           3.430474e-01  3.430474e-01     0 6302
+## 5457           6.749716e-02  6.749716e-02     0 7929
+## 5458           9.703056e-02  9.703056e-02     0  871
+## 5459           1.153547e-01  1.153547e-01     0 3604
+## 5460           1.896135e-02  1.896135e-02     0 7167
+## 5461           1.536670e-01  1.536670e-01     0 2878
+## 5462           1.734041e-01  1.734041e-01     0 4279
+## 5463           1.037113e-01  1.037113e-01     0 4793
+## 5464           1.187890e-01  1.187890e-01     0 3163
+## 5465           1.122950e-01  1.122950e-01     0 4450
+## 5466           4.367371e-01  4.367371e-01     0 6672
+## 5467           1.117430e-01  1.117430e-01     0 7409
+## 5468           1.309497e-01  1.309497e-01     0 3189
+## 5469           5.263554e-02  5.263554e-02     0 2727
+## 5470           8.837895e-02  8.837895e-02     0 3253
+## 5471           1.263149e-01  1.263149e-01     0 1159
+## 5472           3.456743e-01  3.456743e-01     0 3266
+## 5473           9.518705e-02  9.518705e-02     0 6779
+## 5474           3.941836e-02  3.941836e-02     0  909
+## 5475           4.212050e-02  4.212050e-02     0 8121
+## 5476           1.498640e-01  1.498640e-01     0 6299
+## 5477           1.672947e-02  1.672947e-02     0 7175
+## 5478           3.582222e-02  3.582222e-02     0 4665
+## 5479           1.094611e-01  1.094611e-01     0 1873
+## 5480           6.273510e-01  6.273510e-01     1 5478
+## 5481           4.399196e-01  4.399196e-01     0 1130
+## 5482           6.316131e-02  6.316131e-02     0 6601
+## 5483           8.053888e-02  8.053888e-02     0 6330
+## 5484           5.307486e-02  5.307486e-02     0 5763
+## 5485           5.615806e-01  5.615806e-01     1 6254
+## 5486           3.998892e-01  3.998892e-01     0 5639
+## 5487           1.333685e-02  1.333685e-02     0 1805
+## 5488           2.315436e-01  2.315436e-01     0 2638
+## 5489           9.489795e-02  9.489795e-02     0 1055
+## 5490           1.517669e-01  1.517669e-01     0 8224
+## 5491           5.002548e-01  5.002548e-01     1  119
+## 5492           4.442645e-02  4.442645e-02     0 6357
+## 5493           1.482108e-01  1.482108e-01     0 2549
+## 5494           1.122109e-01  1.122109e-01     0 5684
+## 5495           5.734683e-02  5.734683e-02     0 7862
+## 5496           2.485202e-01  2.485202e-01     0 1643
+## 5497           1.480325e-01  1.480325e-01     0 6938
+## 5498           1.676564e-01  1.676564e-01     0 5224
+## 5499           5.565344e-02  5.565344e-02     0 3054
+## 5500           5.302080e-02  5.302080e-02     0 6883
+## 5501           1.247029e-01  1.247029e-01     0 2300
+## 5502           1.627201e-01  1.627201e-01     0 2705
+## 5503           9.176722e-02  9.176722e-02     0 7724
+## 5504           1.775119e-01  1.775119e-01     0 7468
+## 5505           1.573437e-01  1.573437e-01     0  697
+## 5506           4.611131e-02  4.611131e-02     0  492
+## 5507           7.237413e-01  7.237413e-01     1 1248
+## 5508           1.944738e-01  1.944738e-01     0 5192
+## 5509           7.420459e-02  7.420459e-02     0 3810
+## 5510           2.444930e-02  2.444930e-02     0 7166
+## 5511           6.527494e-02  6.527494e-02     0 1452
+## 5512           2.326376e-02  2.326376e-02     0 3848
+## 5513           1.864045e-01  1.864045e-01     0 2863
+## 5514           3.204045e-01  3.204045e-01     0 6119
+## 5515           1.338043e-01  1.338043e-01     0 7767
+## 5516           2.092859e-01  2.092859e-01     0 3473
+## 5517           2.316299e-01  2.316299e-01     0 1541
+## 5518           4.462978e-02  4.462978e-02     0 3313
+## 5519           2.133689e-02  2.133689e-02     0 4519
+## 5520           1.231142e-01  1.231142e-01     0 4009
+## 5521           1.994626e-01  1.994626e-01     0 1980
+## 5522           2.551654e-01  2.551654e-01     0 3951
+## 5523           1.943405e-01  1.943405e-01     0 7261
+## 5524           7.488254e-02  7.488254e-02     0  888
+## 5525           2.630382e-01  2.630382e-01     0  666
+## 5526           1.657374e-01  1.657374e-01     0 5604
+## 5527           2.527001e-01  2.527001e-01     0 6261
+## 5528           1.730608e-01  1.730608e-01     0 8175
+## 5529           1.282496e-01  1.282496e-01     0 5238
+## 5530           1.480501e-01  1.480501e-01     0 7720
+## 5531           5.505499e-01  5.505499e-01     1 6305
+## 5532           8.246192e-02  8.246192e-02     0 2853
+## 5533           1.836467e-01  1.836467e-01     0 5855
+## 5534           3.338347e-01  3.338347e-01     0 1856
+## 5535           2.532843e-02  2.532843e-02     0 7814
+## 5536           1.761184e-02  1.761184e-02     0 3760
+## 5537           1.145459e-01  1.145459e-01     0 4364
+## 5538           6.143525e-01  6.143525e-01     1 5259
+## 5539           2.251105e-01  2.251105e-01     0 7944
+## 5540           2.161181e-02  2.161181e-02     0 7892
+## 5541           1.010993e-01  1.010993e-01     0  826
+## 5542           5.317949e-01  5.317949e-01     1 2139
+## 5543           3.164168e-01  3.164168e-01     0 4449
+## 5544           4.318493e-02  4.318493e-02     0 4691
+## 5545           3.499810e-02  3.499810e-02     0 2984
+## 5546           1.476446e-01  1.476446e-01     0 5381
+## 5547           3.977511e-02  3.977511e-02     0  261
+## 5548           1.664266e-02  1.664266e-02     0 2167
+## 5549           3.143284e-02  3.143284e-02     0 2615
+## 5550           7.858566e-02  7.858566e-02     0 3674
+## 5551           4.152765e-01  4.152765e-01     0  312
+## 5552           1.120275e-01  1.120275e-01     0 4741
+## 5553           2.558025e-01  2.558025e-01     0 5910
+## 5554           8.114035e-02  8.114035e-02     0 7802
+## 5555           2.984051e-01  2.984051e-01     0 6560
+## 5556           5.040650e-01  5.040650e-01     1 1942
+## 5557           3.944601e-02  3.944601e-02     0 4316
+## 5558           3.149889e-01  3.149889e-01     0 3234
+## 5559           1.958650e-01  1.958650e-01     0 8274
+## 5560           1.389871e-01  1.389871e-01     0  958
+## 5561           3.205206e-01  3.205206e-01     0 1775
+## 5562           9.377847e-02  9.377847e-02     0 8088
+## 5563           7.758327e-02  7.758327e-02     0 2657
+## 5564           1.798586e-01  1.798586e-01     0 2391
+## 5565           1.027030e-01  1.027030e-01     0 4381
+## 5566           4.265831e-02  4.265831e-02     0 2413
+## 5567           1.870150e-01  1.870150e-01     0  595
+## 5568           9.155187e-02  9.155187e-02     0 8089
+## 5569           2.821136e-02  2.821136e-02     0  599
+## 5570           2.549968e-01  2.549968e-01     0 7989
+## 5571           9.537801e-02  9.537801e-02     0  450
+## 5572           2.511400e-01  2.511400e-01     0 6028
+## 5573           3.304141e-01  3.304141e-01     0 5939
+## 5574           3.763532e-02  3.763532e-02     0 4188
+## 5575           1.743273e-02  1.743273e-02     0  615
+## 5576           2.921170e-01  2.921170e-01     0 7154
+## 5577           1.862836e-01  1.862836e-01     0 2677
+## 5578           1.921721e-01  1.921721e-01     0  875
+## 5579           4.871709e-01  4.871709e-01     0 6646
+## 5580           4.735642e-01  4.735642e-01     0 6911
+## 5581           3.056288e-01  3.056288e-01     0 5941
+## 5582           2.473501e-01  2.473501e-01     0  192
+## 5583           1.952417e-02  1.952417e-02     0 7419
+## 5584           1.097955e-06  1.097955e-06     0 4978
+## 5585           3.463961e-02  3.463961e-02     0 7900
+## 5586           2.991958e-01  2.991958e-01     0 3246
+## 5587           1.346831e-01  1.346831e-01     0 6209
+## 5588           1.224961e-02  1.224961e-02     0 7930
+## 5589           2.982279e-02  2.982279e-02     0 8371
+## 5590           5.115131e-01  5.115131e-01     1 6173
+## 5591           4.357662e-01  4.357662e-01     0  196
+## 5592           9.644714e-02  9.644714e-02     0 7597
+## 5593           1.363633e-01  1.363633e-01     0 1303
+## 5594           6.756672e-01  6.756672e-01     1 7230
+## 5595           2.657867e-01  2.657867e-01     0 1634
+## 5596           1.435625e-01  1.435625e-01     0 2021
+## 5597           1.781461e-01  1.781461e-01     0 3957
+## 5598           3.054477e-02  3.054477e-02     0 7306
+## 5599           3.558269e-02  3.558269e-02     0 4926
+## 5600           7.770790e-02  7.770790e-02     0 2766
+## 5601           2.104286e-01  2.104286e-01     0 2128
+## 5602           1.337600e-01  1.337600e-01     0 3240
+## 5603           1.072713e-01  1.072713e-01     0 4189
+## 5604           2.489709e-02  2.489709e-02     0 2195
+## 5605           1.600668e-01  1.600668e-01     0 7771
+## 5606           2.613577e-01  2.613577e-01     0 7746
+## 5607           4.752490e-01  4.752490e-01     0 4695
+## 5608           2.044590e-01  2.044590e-01     0  938
+## 5609           7.059367e-02  7.059367e-02     0 2814
+## 5610           1.447191e-01  1.447191e-01     0 3580
+## 5611           4.253344e-01  4.253344e-01     0  680
+## 5612           3.521839e-01  3.521839e-01     0 5069
+## 5613           3.904661e-02  3.904661e-02     0 7538
+## 5614           5.133513e-01  5.133513e-01     1 3343
+## 5615           1.371953e-01  1.371953e-01     0 4202
+## 5616           6.778117e-01  6.778117e-01     1 7273
+## 5617           2.224719e-01  2.224719e-01     0 5840
+## 5618           3.035857e-02  3.035857e-02     0   57
+## 5619           1.412185e-01  1.412185e-01     0  471
+## 5620           7.395000e-02  7.395000e-02     0 2736
+## 5621           6.930262e-02  6.930262e-02     0 3299
+## 5622           6.943399e-02  6.943399e-02     0  743
+## 5623           3.728495e-02  3.728495e-02     0 6089
+## 5624           2.409487e-02  2.409487e-02     0 1362
+## 5625           4.583980e-01  4.583980e-01     0 5946
+## 5626           9.176998e-02  9.176998e-02     0 3736
+## 5627           4.033282e-01  4.033282e-01     0  673
+## 5628           2.303884e-01  2.303884e-01     0 1588
+## 5629           3.405817e-02  3.405817e-02     0 1587
+## 5630           8.676173e-02  8.676173e-02     0 2886
+## 5631           9.525539e-02  9.525539e-02     0 7136
+## 5632           2.375418e-02  2.375418e-02     0 6290
+## 5633           5.612575e-02  5.612575e-02     0 6212
+## 5634           4.048658e-03  4.048658e-03     0 7147
+## 5635           2.884526e-01  2.884526e-01     0 2249
+## 5636           6.827752e-02  6.827752e-02     0 8214
+## 5637           2.590362e-01  2.590362e-01     0 4590
+## 5638           8.172802e-01  8.172802e-01     1 6270
+## 5639           5.538095e-02  5.538095e-02     0 4119
+## 5640           1.602901e-01  1.602901e-01     0 7388
+## 5641           3.201318e-01  3.201318e-01     0 7568
+## 5642           7.189563e-02  7.189563e-02     0 5877
+## 5643           1.186690e-01  1.186690e-01     0 4331
+## 5644           1.217761e-01  1.217761e-01     0 3227
+## 5645           1.048876e-01  1.048876e-01     0 7420
+## 5646           1.579533e-01  1.579533e-01     0 6689
+## 5647           5.672516e-02  5.672516e-02     0 4618
+## 5648           3.877246e-01  3.877246e-01     0 2900
+## 5649           7.383719e-01  7.383719e-01     1 1290
+## 5650           5.121191e-02  5.121191e-02     0 2806
+## 5651           2.857003e-01  2.857003e-01     0  470
+## 5652           1.292926e-02  1.292926e-02     0 7921
+## 5653           3.535908e-01  3.535908e-01     0 3220
+## 5654           1.658383e-01  1.658383e-01     0  795
+## 5655           5.215587e-02  5.215587e-02     0 2942
+## 5656           6.232777e-02  6.232777e-02     0 4069
+## 5657           5.406855e-02  5.406855e-02     0 3849
+## 5658           8.981794e-02  8.981794e-02     0 7666
+## 5659           3.596636e-01  3.596636e-01     0  689
+## 5660           2.168581e-01  2.168581e-01     0 3372
+## 5661           3.538125e-01  3.538125e-01     0 2630
+## 5662           6.159294e-02  6.159294e-02     0 2072
+## 5663           2.150700e-01  2.150700e-01     0 7335
+## 5664           1.219146e-01  1.219146e-01     0 2645
+## 5665           6.005411e-02  6.005411e-02     0  670
+## 5666           7.880640e-02  7.880640e-02     0 7769
+## 5667           8.771320e-02  8.771320e-02     0 2943
+## 5668           1.705486e-01  1.705486e-01     0  904
+## 5669           5.096917e-02  5.096917e-02     0 3414
+## 5670           2.930693e-01  2.930693e-01     0 6106
+## 5671           1.793114e-01  1.793114e-01     0 5168
+## 5672           1.847153e-02  1.847153e-02     0 1947
+## 5673           2.256066e-01  2.256066e-01     0 4220
+## 5674           1.410961e-01  1.410961e-01     0 3811
+## 5675           2.354268e-01  2.354268e-01     0 3263
+## 5676           3.656772e-02  3.656772e-02     0 7884
+## 5677           5.507250e-02  5.507250e-02     0 1666
+## 5678           1.683220e-01  1.683220e-01     0 2678
+## 5679           2.164529e-02  2.164529e-02     0 4656
+## 5680           1.416280e-01  1.416280e-01     0 8197
+## 5681           3.718846e-02  3.718846e-02     0 7550
+## 5682           1.913167e-01  1.913167e-01     0 6917
+## 5683           8.050691e-01  8.050691e-01     1 1710
+## 5684           1.788524e-01  1.788524e-01     0 7692
+## 5685           6.191832e-02  6.191832e-02     0 2423
+## 5686           5.655674e-02  5.655674e-02     0 4828
+## 5687           3.795893e-02  3.795893e-02     0 1858
+## 5688           1.199838e-01  1.199838e-01     0 7424
+## 5689           2.094499e-02  2.094499e-02     0  879
+## 5690           2.341980e-01  2.341980e-01     0 1430
+## 5691           9.515452e-02  9.515452e-02     0 2376
+## 5692           4.173801e-01  4.173801e-01     0 4083
+## 5693           3.486124e-01  3.486124e-01     0  910
+## 5694           1.967046e-01  1.967046e-01     0 7563
+## 5695           2.867767e-01  2.867767e-01     0 6132
+## 5696           7.402707e-02  7.402707e-02     0 4129
+## 5697           2.662414e-01  2.662414e-01     0 7459
+## 5698           2.130061e-01  2.130061e-01     0 1258
+## 5699           1.633979e-01  1.633979e-01     0 5856
+## 5700           1.577654e-01  1.577654e-01     0 4731
+## 5701           1.108535e-01  1.108535e-01     0 3406
+## 5702           2.271326e-01  2.271326e-01     0 7277
+## 5703           1.197437e-02  1.197437e-02     0 7890
+## 5704           2.624928e-01  2.624928e-01     0 4053
+## 5705           1.241858e-02  1.241858e-02     0 2319
+## 5706           2.151117e-01  2.151117e-01     0 5261
+## 5707           4.277746e-02  4.277746e-02     0 2521
+## 5708           4.107899e-02  4.107899e-02     0  893
+## 5709           3.119321e-01  3.119321e-01     0 6353
+## 5710           1.053334e-01  1.053334e-01     0 1500
+## 5711           2.938230e-01  2.938230e-01     0   70
+## 5712           1.201059e-01  1.201059e-01     0 3824
+## 5713           8.693994e-03  8.693994e-03     0  201
+## 5714           5.536125e-02  5.536125e-02     0 5692
+## 5715           4.230906e-02  4.230906e-02     0 1542
+## 5716           2.065234e-02  2.065234e-02     0 4827
+## 5717           1.376251e-01  1.376251e-01     0 7502
+## 5718           2.278929e-02  2.278929e-02     0 6195
+## 5719           1.647839e-01  1.647839e-01     0 4717
+## 5720           4.206967e-02  4.206967e-02     0 7022
+## 5721           1.356164e-01  1.356164e-01     0 6677
+## 5722           1.930518e-01  1.930518e-01     0   87
+## 5723           1.905714e-01  1.905714e-01     0 3102
+## 5724           1.996867e-01  1.996867e-01     0 3005
+## 5725           1.779801e-01  1.779801e-01     0 6466
+## 5726           3.733291e-02  3.733291e-02     0 5962
+## 5727           1.492118e-01  1.492118e-01     0 3551
+## 5728           2.650386e-01  2.650386e-01     0 1108
+## 5729           1.122828e-02  1.122828e-02     0  618
+## 5730           5.203727e-01  5.203727e-01     1 1591
+## 5731           4.040866e-02  4.040866e-02     0  725
+## 5732           2.787902e-02  2.787902e-02     0 6194
+## 5733           1.229283e-01  1.229283e-01     0 8067
+## 5734           5.393045e-01  5.393045e-01     1 6701
+## 5735           5.906104e-01  5.906104e-01     1 6969
+## 5736           6.898259e-02  6.898259e-02     0  223
+## 5737           8.514994e-02  8.514994e-02     0  589
+## 5738           4.522065e-01  4.522065e-01     0 1117
+## 5739           6.182276e-02  6.182276e-02     0 6231
+## 5740           4.171545e-02  4.171545e-02     0 5771
+## 5741           1.747172e-01  1.747172e-01     0 1076
+## 5742           1.947244e-01  1.947244e-01     0 3660
+## 5743           5.756207e-01  5.756207e-01     1 5935
+## 5744           2.886629e-02  2.886629e-02     0 5391
+## 5745           4.519127e-03  4.519127e-03     0 1345
+## 5746           2.153201e-01  2.153201e-01     0 4339
+## 5747           3.917393e-02  3.917393e-02     0 2804
+## 5748           1.238625e-01  1.238625e-01     0 2876
+## 5749           1.560579e-01  1.560579e-01     0 1515
+## 5750           3.828241e-02  3.828241e-02     0 4159
+## 5751           4.225124e-01  4.225124e-01     0 7570
+## 5752           8.637407e-02  8.637407e-02     0 1973
+## 5753           2.442611e-01  2.442611e-01     0 3830
+## 5754           2.893628e-02  2.893628e-02     0 6574
+## 5755           6.862180e-02  6.862180e-02     0 4649
+## 5756           1.251119e-01  1.251119e-01     0 2003
+## 5757           1.636343e-02  1.636343e-02     0 8041
+## 5758           2.956710e-01  2.956710e-01     0  930
+## 5759           7.297067e-02  7.297067e-02     0 1075
+## 5760           6.669195e-01  6.669195e-01     1 2895
+## 5761           1.895639e-01  1.895639e-01     0 7368
+## 5762           9.197872e-02  9.197872e-02     0 7430
+## 5763           1.181341e-01  1.181341e-01     0 4481
+## 5764           4.387906e-02  4.387906e-02     0  385
+## 5765           1.206217e-02  1.206217e-02     0 6790
+## 5766           2.070755e-01  2.070755e-01     0 5655
+## 5767           2.829960e-01  2.829960e-01     0 3257
+## 5768           1.379352e-01  1.379352e-01     0 5094
+## 5769           1.581638e-01  1.581638e-01     0 3698
+## 5770           1.342123e-01  1.342123e-01     0 2640
+## 5771           9.898484e-02  9.898484e-02     0 3312
+## 5772           1.433996e-02  1.433996e-02     0 7918
+## 5773           8.538077e-01  8.538077e-01     1 8173
+## 5774           1.898583e-01  1.898583e-01     0 6239
+## 5775           2.236016e-01  2.236016e-01     0 5582
+## 5776           4.706885e-01  4.706885e-01     0 3487
+## 5777           2.238813e-01  2.238813e-01     0 4894
+## 5778           2.990304e-01  2.990304e-01     0 2026
+## 5779           7.457770e-02  7.457770e-02     0 4562
+## 5780           7.244948e-02  7.244948e-02     0 2192
+## 5781           1.064129e-01  1.064129e-01     0 2726
+## 5782           1.606460e-01  1.606460e-01     0 2715
+## 5783           2.311546e-01  2.311546e-01     0 6006
+## 5784           4.197666e-02  4.197666e-02     0 6005
+## 5785           2.151520e-01  2.151520e-01     0 4323
+## 5786           3.407394e-01  3.407394e-01     0 2747
+## 5787           1.142558e-01  1.142558e-01     0 6297
+## 5788           1.019186e-01  1.019186e-01     0 2302
+## 5789           8.737938e-02  8.737938e-02     0 5309
+## 5790           1.642775e-01  1.642775e-01     0 7748
+## 5791           5.875088e-02  5.875088e-02     0 2812
+## 5792           1.984676e-01  1.984676e-01     0 2295
+## 5793           2.057740e-02  2.057740e-02     0  428
+## 5794           7.019453e-02  7.019453e-02     0  155
+## 5795           3.314297e-01  3.314297e-01     0 5271
+## 5796           5.484872e-01  5.484872e-01     1 1940
+## 5797           5.453447e-02  5.453447e-02     0 4403
+## 5798           1.694971e-01  1.694971e-01     0 1041
+## 5799           2.992406e-01  2.992406e-01     0  144
+## 5800           1.132660e-02  1.132660e-02     0 2159
+## 5801           3.454100e-01  3.454100e-01     0 4373
+## 5802           6.456866e-02  6.456866e-02     0 5801
+## 5803           9.046409e-02  9.046409e-02     0 4121
+## 5804           9.247608e-03  9.247608e-03     0 4243
+## 5805           3.358251e-02  3.358251e-02     0  566
+## 5806           5.335200e-01  5.335200e-01     1 4725
+## 5807           1.702289e-01  1.702289e-01     0 6843
+## 5808           1.895691e-01  1.895691e-01     0 5821
+## 5809           1.192933e-01  1.192933e-01     0 7687
+## 5810           1.171699e-01  1.171699e-01     0 5494
+## 5811           2.502178e-01  2.502178e-01     0 5631
+## 5812           2.009346e-01  2.009346e-01     0 1777
+## 5813           8.072628e-02  8.072628e-02     0 4161
+## 5814           6.893424e-02  6.893424e-02     0 5398
+## 5815           1.292994e-01  1.292994e-01     0 6552
+## 5816           7.068934e-01  7.068934e-01     1 4713
+## 5817           1.017180e-01  1.017180e-01     0  708
+## 5818           2.260016e-01  2.260016e-01     0 6264
+## 5819           1.900577e-01  1.900577e-01     0 2268
+## 5820           1.698295e-01  1.698295e-01     0 1131
+## 5821           1.227001e-01  1.227001e-01     0  493
+## 5822           3.389528e-01  3.389528e-01     0 3080
+## 5823           1.558081e-01  1.558081e-01     0 5961
+## 5824           6.053643e-02  6.053643e-02     0 1185
+## 5825           3.366259e-01  3.366259e-01     0 3394
+## 5826           3.382111e-01  3.382111e-01     0 5079
+## 5827           4.969806e-02  4.969806e-02     0 7251
+## 5828           1.027148e-01  1.027148e-01     0 5616
+## 5829           4.028908e-02  4.028908e-02     0 6849
+## 5830           2.272791e-01  2.272791e-01     0 5151
+## 5831           7.625165e-02  7.625165e-02     0 3914
+## 5832           8.736761e-01  8.736761e-01     1 6604
+## 5833           9.698096e-02  9.698096e-02     0 2973
+## 5834           6.181476e-02  6.181476e-02     0 4594
+## 5835           1.971316e-01  1.971316e-01     0 3993
+## 5836           5.089160e-02  5.089160e-02     0 3774
+## 5837           7.821340e-02  7.821340e-02     0 3020
+## 5838           2.217812e-01  2.217812e-01     0 1060
+## 5839           1.878522e-01  1.878522e-01     0 1961
+## 5840           1.890888e-01  1.890888e-01     0  445
+## 5841           3.662596e-02  3.662596e-02     0 4332
+## 5842           2.035881e-01  2.035881e-01     0 8340
+## 5843           5.453837e-01  5.453837e-01     1 5952
+## 5844           4.867973e-02  4.867973e-02     0 4064
+## 5845           9.645236e-02  9.645236e-02     0 7751
+## 5846           2.151852e-01  2.151852e-01     0 5652
+## 5847           2.134474e-01  2.134474e-01     0 1977
+## 5848           2.969220e-01  2.969220e-01     0 1519
+## 5849           5.772011e-01  5.772011e-01     1 2480
+## 5850           5.014893e-01  5.014893e-01     1 3984
+## 5851           2.973622e-01  2.973622e-01     0 5222
+## 5852           3.286738e-01  3.286738e-01     0 6626
+## 5853           6.728252e-02  6.728252e-02     0 3188
+## 5854           1.028677e-01  1.028677e-01     0 7717
+## 5855           3.455603e-02  3.455603e-02     0  178
+## 5856           4.081242e-02  4.081242e-02     0 6010
+## 5857           1.524001e-02  1.524001e-02     0 3599
+## 5858           2.068007e-01  2.068007e-01     0 4415
+## 5859           1.847457e-01  1.847457e-01     0 2838
+## 5860           3.171849e-01  3.171849e-01     0 2477
+## 5861           2.122479e-01  2.122479e-01     0 3485
+## 5862           1.685558e-01  1.685558e-01     0 7698
+## 5863           3.217442e-01  3.217442e-01     0 6563
+## 5864           4.818887e-01  4.818887e-01     0 6894
+## 5865           2.814244e-01  2.814244e-01     0 6587
+## 5866           4.568596e-01  4.568596e-01     0 5199
+## 5867           1.040318e-01  1.040318e-01     0 7190
+## 5868           2.873776e-01  2.873776e-01     0  998
+## 5869           2.878945e-01  2.878945e-01     0 2396
+## 5870           5.623707e-01  5.623707e-01     1 6971
+## 5871           5.014357e-01  5.014357e-01     1 5418
+## 5872           2.624996e-01  2.624996e-01     0 7404
+## 5873           3.907909e-01  3.907909e-01     0 1428
+## 5874           2.618005e-02  2.618005e-02     0 1179
+## 5875           6.691975e-01  6.691975e-01     1 4103
+## 5876           7.038090e-02  7.038090e-02     0 2438
+## 5877           8.033977e-02  8.033977e-02     0 6831
+## 5878           1.315151e-01  1.315151e-01     0 4019
+## 5879           1.372446e-01  1.372446e-01     0 2741
+## 5880           2.622297e-02  2.622297e-02     0 5965
+## 5881           1.930750e-01  1.930750e-01     0 1411
+## 5882           5.392876e-02  5.392876e-02     0 4487
+## 5883           1.902737e-01  1.902737e-01     0 2134
+## 5884           1.172924e-01  1.172924e-01     0 5781
+## 5885           1.553057e-02  1.553057e-02     0 8155
+## 5886           2.050468e-02  2.050468e-02     0 2541
+## 5887           8.496098e-02  8.496098e-02     0  161
+## 5888           2.592670e-01  2.592670e-01     0 6318
+## 5889           3.977261e-02  3.977261e-02     0 7718
+## 5890           1.543047e-01  1.543047e-01     0 6284
+## 5891           5.695467e-01  5.695467e-01     1 6120
+## 5892           3.490860e-01  3.490860e-01     0 2870
+## 5893           2.061072e-01  2.061072e-01     0 3915
+## 5894           5.228195e-02  5.228195e-02     0 6769
+## 5895           2.081437e-01  2.081437e-01     0 3877
+## 5896           1.197099e-01  1.197099e-01     0 6961
+## 5897           3.948446e-01  3.948446e-01     0 4154
+## 5898           2.413827e-01  2.413827e-01     0 4355
+## 5899           3.031845e-02  3.031845e-02     0 1771
+## 5900           4.274121e-02  4.274121e-02     0 7271
+## 5901           1.901745e-01  1.901745e-01     0   49
+## 5902           3.063405e-01  3.063405e-01     0  767
+## 5903           1.139609e-01  1.139609e-01     0 2023
+## 5904           4.564646e-02  4.564646e-02     0  154
+## 5905           2.360470e-01  2.360470e-01     0 2636
+## 5906           3.845857e-02  3.845857e-02     0 3260
+## 5907           1.419469e-01  1.419469e-01     0 3614
+## 5908           2.092418e-01  2.092418e-01     0 3167
+## 5909           5.991118e-02  5.991118e-02     0 7018
+## 5910           1.548972e-01  1.548972e-01     0 3067
+## 5911           6.241949e-02  6.241949e-02     0 6549
+## 5912           2.538827e-01  2.538827e-01     0 7542
+## 5913           8.669041e-02  8.669041e-02     0   31
+## 5914           8.442843e-02  8.442843e-02     0  503
+## 5915           7.970751e-02  7.970751e-02     0 4693
+## 5916           1.514003e-01  1.514003e-01     0 7794
+## 5917           4.697645e-02  4.697645e-02     0 4277
+## 5918           5.728156e-02  5.728156e-02     0 4514
+## 5919           4.879199e-01  4.879199e-01     0 4050
+## 5920           1.505795e-01  1.505795e-01     0 7965
+## 5921           3.880349e-02  3.880349e-02     0 1082
+## 5922           1.917623e-01  1.917623e-01     0  706
+## 5923           3.065313e-01  3.065313e-01     0 1252
+## 5924           1.790647e-01  1.790647e-01     0 7656
+## 5925           7.005151e-02  7.005151e-02     0 3476
+## 5926           6.530765e-02  6.530765e-02     0 1268
+## 5927           3.246654e-02  3.246654e-02     0 2725
+## 5928           7.654447e-02  7.654447e-02     0 2753
+## 5929           2.258001e-01  2.258001e-01     0 4569
+## 5930           1.952833e-01  1.952833e-01     0 7003
+## 5931           1.105135e-02  1.105135e-02     0 1262
+## 5932           1.956780e-01  1.956780e-01     0 1326
+## 5933           4.894938e-01  4.894938e-01     0  111
+## 5934           4.063757e-02  4.063757e-02     0 4278
+## 5935           1.750226e-02  1.750226e-02     0 7658
+## 5936           1.230998e-01  1.230998e-01     0 1638
+## 5937           3.623256e-01  3.623256e-01     0 5738
+## 5938           2.481764e-01  2.481764e-01     0 3074
+## 5939           1.982745e-01  1.982745e-01     0 7968
+## 5940           1.789173e-01  1.789173e-01     0 7098
+## 5941           6.453208e-01  6.453208e-01     1 4767
+## 5942           4.368145e-02  4.368145e-02     0 7465
+## 5943           2.605051e-02  2.605051e-02     0 6413
+## 5944           3.879528e-01  3.879528e-01     0 5916
+## 5945           1.319782e-01  1.319782e-01     0 2091
+## 5946           3.000571e-02  3.000571e-02     0 3231
+## 5947           3.436198e-02  3.436198e-02     0  724
+## 5948           2.445065e-02  2.445065e-02     0 4677
+## 5949           9.668512e-03  9.668512e-03     0 1464
+## 5950           3.096355e-01  3.096355e-01     0 2056
+## 5951           5.474260e-02  5.474260e-02     0 6103
+## 5952           2.044186e-01  2.044186e-01     0 2407
+## 5953           3.214233e-02  3.214233e-02     0 2952
+## 5954           8.649588e-02  8.649588e-02     0 6654
+## 5955           9.331797e-03  9.331797e-03     0 2375
+## 5956           2.858882e-01  2.858882e-01     0 8301
+## 5957           2.664658e-01  2.664658e-01     0 7330
+## 5958           2.608095e-01  2.608095e-01     0 3770
+## 5959           4.105186e-01  4.105186e-01     0 3111
+## 5960           1.543000e-01  1.543000e-01     0 7142
+## 5961           5.705572e-02  5.705572e-02     0 1511
+## 5962           1.538795e-02  1.538795e-02     0 7212
+## 5963           3.497971e-02  3.497971e-02     0 5205
+## 5964           5.197509e-02  5.197509e-02     0  164
+## 5965           1.146056e-02  1.146056e-02     0 2522
+## 5966           7.921074e-02  7.921074e-02     0  343
+## 5967           6.086160e-01  6.086160e-01     1 1065
+## 5968           6.285057e-01  6.285057e-01     1 3239
+## 5969           4.866790e-02  4.866790e-02     0 1894
+## 5970           9.750245e-02  9.750245e-02     0 3274
+## 5971           2.978212e-01  2.978212e-01     0 5944
+## 5972           9.392917e-02  9.392917e-02     0 6581
+## 5973           5.921115e-02  5.921115e-02     0 5081
+## 5974           1.761180e-01  1.761180e-01     0   55
+## 5975           4.314726e-02  4.314726e-02     0 3200
+## 5976           6.932755e-02  6.932755e-02     0 2945
+## 5977           2.369761e-01  2.369761e-01     0 4738
+## 5978           2.007311e-01  2.007311e-01     0 6448
+## 5979           2.163104e-02  2.163104e-02     0 3455
+## 5980           2.547602e-01  2.547602e-01     0 4872
+## 5981           3.861526e-01  3.861526e-01     0 7172
+## 5982           1.401816e-01  1.401816e-01     0 4648
+## 5983           4.614625e-01  4.614625e-01     0 7678
+## 5984           2.327611e-01  2.327611e-01     0 4823
+## 5985           3.086270e-01  3.086270e-01     0 6628
+## 5986           8.470281e-01  8.470281e-01     1 6671
+## 5987           2.163095e-01  2.163095e-01     0 6052
+## 5988           1.402312e-01  1.402312e-01     0 8328
+## 5989           1.062998e-01  1.062998e-01     0 4613
+## 5990           1.625606e-01  1.625606e-01     0 7128
+## 5991           4.581698e-01  4.581698e-01     0 5669
+## 5992           2.064707e-02  2.064707e-02     0 2230
+## 5993           4.100993e-01  4.100993e-01     0 4674
+## 5994           2.151593e-01  2.151593e-01     0 3366
+## 5995           7.334536e-01  7.334536e-01     1 4863
+## 5996           2.174293e-01  2.174293e-01     0 1633
+## 5997           3.712035e-02  3.712035e-02     0 2326
+## 5998           2.177661e-02  2.177661e-02     0 1688
+## 5999           3.595688e-01  3.595688e-01     0  576
+## 6000           1.858833e-01  1.858833e-01     0 3464</code></pre>
+<pre class="r"><code>prop.table(table(predict.model.log_all7$match))</code></pre>
+<pre><code>## 
+##     0     1 
+## 0.944 0.056</code></pre>
 </div>
 </div>
 </div>

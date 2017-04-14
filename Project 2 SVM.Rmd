@@ -1,0 +1,101 @@
+---
+title: "Project 2 SVM"
+author: "Michael Im"
+date: "April 13, 2017"
+output:   
+  html_document: 
+    theme: united
+    toc: yes
+    number_sections: TRUE
+    toc_float:
+      collapsed: TRUE
+---
+
+#Introduction
+
+```{r, include = F}
+
+data1 = read.csv("sdclean.csv", header = T)
+
+```
+
+##Cleaning Data
+
+```{r}
+#who will match on this dataset
+
+#getting the numerical variables
+str(data1)
+num = sapply(data1, is.numeric)
+nums = data1[,num]
+train1 = data1[1:5000,]
+test1 = data1[5001:6000,]
+
+```
+
+#SVM
+
+##Model 1
+
+```{r}
+
+# begin by training a simple linear SVM
+library(kernlab)
+svm1 <- ksvm(match ~ ., data = train1,
+                          kernel = "rbfdot")
+
+svm1
+
+# predictions on testing dataset
+svm1_predictions <- predict(svm1, test1)
+
+head(svm1_predictions)
+
+#table(svm1_predictions, test1$match)
+
+# look only at agreement vs. non-agreement
+# construct a vector of TRUE/FALSE indicating correct/incorrect predictions
+#agreement <- letter_predictions == letters_test$letter
+#table(agreement)
+#prop.table(table(agreement))
+
+```
+
+##Model 2
+
+```{r}
+
+#USING ONLY THE VARIABLES THAT WORKED IN THE 90% LOGISTIC REGRESSION (log_all7)
+train2 = subset(train1, select = c(int_corr , age_o , pf_o_sin , pf_o_sha , attr_o , fun_o , amb_o , prob_o , met_o , career_c , imprace , exercise , gaming , movies , concerts , exphappy , attr2_1 , intel2_1, match))
+test2 = subset(test1, select = c(int_corr , age_o , pf_o_sin , pf_o_sha , attr_o , fun_o , amb_o , prob_o , met_o , career_c , imprace , exercise , gaming , movies , concerts , exphappy , attr2_1 , intel2_1, match))
+svm2 <- ksvm(match ~ ., data = train2,
+                          kernel = "rbfdot")
+
+svm2
+
+# predictions on testing dataset
+svm2_predictions <- predict(svm2, test2)
+svm2_predictions = ifelse(svm2_predictions > 0, 1, 0)
+head(svm2_predictions)
+
+table(svm2_predictions, test2$match)
+
+# look only at agreement vs. non-agreement
+# construct a vector of TRUE/FALSE indicating correct/incorrect predictions
+agreement2 <- svm2_predictions == test2$match
+table(agreement2)
+prop.table(table(agreement2))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+

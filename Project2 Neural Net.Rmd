@@ -1,0 +1,100 @@
+---
+title: "Project2 Neural Net"
+author: "Michael Im"
+date: "April 13, 2017"
+output:   
+  html_document: 
+    theme: united
+    toc: yes
+    number_sections: TRUE
+    toc_float:
+      collapsed: TRUE
+---
+
+#Introduction
+
+```{r, include = F}
+
+data1 = read.csv("sdclean.csv", header = T)
+
+```
+
+##Cleaning Data
+
+```{r}
+#who will match on this dataset
+
+#getting the numerical variables
+str(data1)
+num = sapply(data1, is.numeric)
+nums = data1[,num]
+
+
+#tele_nn <- model.matrix(~ job + marital + education + default + housing + loan +  contact + month + day_of_week + poutcome + y, data1 = tele1)
+```
+
+#Neural Network
+
+##Model 1 (Numerical values only)
+
+```{r}
+
+
+# custom normalization function
+normalize <- function(x) { 
+  return((x - min(x)) / (max(x) - min(x)))
+}
+# apply normalization to entire data frame
+nums_norm = as.data.frame(lapply(nums[,-5], normalize))
+nums_norm$match = nums$match
+
+library(neuralnet)
+
+train1 = nums_norm[1:5000,]
+test1 = nums_norm[5001:6000,]
+
+# simple ANN with only a single hidden neuron
+match_model1 = neuralnet(formula =  match ~ gender + condtn + order + int_corr + samerace + age_o + race_o + pf_o_att + pf_o_sin + pf_o_int + pf_o_fun + pf_o_amb + pf_o_sha + dec_o + attr_o + sinc_o + intel_o + fun_o + amb_o + shar_o + like_o + prob_o + met_o + age + race + imprace + imprelig + sports + tvsports + exercise + dining + museums + art + hiking + gaming + clubbing + reading + tv + theater + movies + concerts + music + shopping + yoga + exphappy + attr1_1 + sinc1_1 + intel1_1 + fun1_1 + amb1_1 + shar1_1 + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1 + shar2_1 + attr3_1 + sinc3_1 + fun3_1 + intel3_1 + amb3_1  , data = train1, hidden = 1)
+
+
+
+#NOTE THIS IS NOT ALL THE VARIABLES, NEED TO INCLUDE ALL OF THEM LATER
+plot(match_model1)
+
+
+
+#prediction for the model
+model_results1 = compute(match_model1, test1[2:63]) #every column except the result column and X
+# obtain predicted strength values
+predicted_match1 = model_results1$net.result
+# examine the correlation between predicted and actual values
+cor(predicted_match1, test1$match)
+
+```
+
+```{r}
+
+# simple ANN with only a single hidden neuron
+#THIS MODEL ONLY USES THE VARIABLES FROM THE 90% CONFIDENCE MODEL (FROM LOG MODEL LOG6)
+match_model2 <- neuralnet(formula =  match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + movies + concerts + music + exphappy + attr2_1 + intel2_1, data = train1, hidden = 2)
+
+
+
+#NOTE THIS IS NOT ALL THE VARIABLES, NEED TO INCLUDE ALL OF THEM LATER
+plot(match_model2)
+
+#x.sub2 <- subset(x.df, y > 2 & V2 > 0.4, select = c(V1, V4))
+test2 = subset(test1, select = c(int_corr, age_o , pf_o_sin , pf_o_sha , attr_o , fun_o , prob_o , met_o ,  imprace ,  exercise , art , gaming , movies , concerts , music , exphappy , attr2_1 , intel2_1))
+test2$match = test1$match
+
+#prediction for the model
+model_results2 <- compute(match_model2, test2[1:18]) #every column except the result column and X
+# obtain predicted strength values
+predicted_match2 <- model_results2$net.result
+# examine the correlation between predicted and actual values
+cor(predicted_match, test2$match)
+
+```
+
+
+
