@@ -109,10 +109,10 @@ summary(log4)
 #building logistic model with the numerical variables
 log5 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + clubbing + movies + concerts + music + exphappy + attr2_1 + intel2_1, data = train1, family = "binomial")
 summary(log5)
-#variables to include for next model: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + movies + concerts + music + exphappy + attr2_1 + intel2_1
+#variables to include for next model: int_corr + age_o + pf_o_sin + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + movies + concerts + music + exphappy  + intel2_1
 
 #VARIABLES THAT WE TOOK OUT (stage 2)
-#clubbing
+#clubbing + pf_o_sha + attr2_1
 
 ```
 
@@ -123,12 +123,27 @@ summary(log5)
 #log model 6 with VARIABLES THAT WERE 90% CONFIDENT FROM THE FIFTH MODEL
 
 #building logistic model with the numerical variables
-log6 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + movies + concerts + music + exphappy + attr2_1 + intel2_1, data = train1, family = "binomial")
+log6 = glm(match ~ int_corr + age_o + pf_o_sin + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + movies + concerts + music + exphappy  + intel2_1, data = train1, family = "binomial")
 summary(log6)
-#variables to include for next model: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + art + gaming + movies + concerts + music + exphappy + attr2_1 + intel2_1
+#variables to include for next model: int_corr + age_o + pf_o_sin + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + gaming + concerts + exphappy  + intel2_1
 
-#ALL VARIABLES ARE NOW CONFIDENT AT THE 90% LEVEL
-#BONUS: ACTUALLY ALL THE VARIABLES ARE NOW 95% CONFIDENT AS WELL
+#VARIABLES THAT WE TOOK OUT
+#art + movies + music
+
+```
+
+###Model 6
+
+```{r}
+
+#log model 6 with VARIABLES THAT WERE 90% CONFIDENT FROM THE FIFTH MODEL
+
+#building logistic model with the numerical variables
+log7 = glm(match ~ int_corr + age_o + pf_o_sin + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + gaming + concerts + exphappy  + intel2_1, data = train1, family = "binomial")
+summary(log7)
+#variables to include for next model: int_corr + age_o + pf_o_sin + attr_o + fun_o + prob_o + met_o +  imprace +  exercise + gaming + concerts + exphappy  + intel2_1
+
+#FINAL MODEL TO USE
 
 ```
 
@@ -217,10 +232,25 @@ summary(log_all6)
 #building logistic model with the numerical variables
 log_all7 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + career_c + imprace + exercise + gaming + movies + concerts + exphappy + attr2_1 + intel2_1, data = train2, family = "binomial")
 summary(log_all7)
-#significant variable: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + career_c + imprace + exercise + gaming + movies + concerts + exphappy + attr2_1 + intel2_1
-#note all significant at 90% confidence interval
+#significant variable: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + career_c + imprace + exercise + gaming + concerts + exphappy + intel2_1
 
-#NOTE THAT THE ONLY CAREER THAT IS 90% SIGNIFICANT IS A CAREER IN POLITICS AND UNDECIDED AND BOTH RESULT IN SERIOUS LOSS OF CHANCE IN GETTING MATCHED (lol)
+#VARIABLES TO REMOVE
+#movies + attr2_1
+
+
+```
+
+###Model 7
+
+```{r}
+
+#building logistic model with the numerical variables
+log_all8 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + career_c + imprace + exercise + gaming + concerts + exphappy + intel2_1, data = train2, family = "binomial")
+summary(log_all8)
+#significant variable: int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + career_c + imprace + exercise + gaming + concerts + exphappy + intel2_1
+
+#VARIABLES TO REMOVE
+#movies + attr2_1
 
 
 ```
@@ -229,8 +259,8 @@ summary(log_all7)
 
 ```{r}
 
-summary(log6)
-summary(log_all7)
+summary(log7)
+summary(log_all8)
 
 ```
 
@@ -245,13 +275,13 @@ prop.table(table(test1$match))
 
 # Predict the Match Probability for the Testing Dataset using the model developed on the training dataset
 #use survival.model2
-predict.model.log6 = predict(log6, newdata = test1, type = "response")
-predict.model.log6 = as.data.frame(predict.model.log6, na.rm = TRUE)
-predict.model.log6$predict.model <- as.numeric(predict.model.log6$predict.model)
-predict.model.log6$match <- ifelse(predict.model.log6$predict.model > 0.5, 1, 0)
-predict.model.log6$X <- test1$X
-predict.model.log6
-prop.table(table(predict.model.log6$match))
+predict.model.log7 = predict(log7, newdata = test1, type = "response")
+predict.model.log7 = as.data.frame(predict.model.log7, na.rm = TRUE)
+predict.model.log7$predict.model <- as.numeric(predict.model.log7$predict.model)
+predict.model.log7$match <- ifelse(predict.model.log7$predict.model > 0.5, 1, 0)
+predict.model.log7$X <- test1$X
+predict.model.log7
+prop.table(table(predict.model.log7$match))
 
 ```
 
@@ -260,18 +290,18 @@ prop.table(table(predict.model.log6$match))
 ```{r}
 
 #log6 = predict.model.log6
-#log_all7 = predict.model.log_all7
+#log_all8 = predict.model.log_all8
 prop.table(table(test2$match))
 
 # Predict the Match Probability for the Testing Dataset using the model developed on the training dataset
 #use survival.model2
-predict.model.log_all7 = predict(log_all7, newdata = test2, type = "response")
-predict.model.log_all7 = as.data.frame(predict.model.log_all7, na.rm = TRUE)
-predict.model.log_all7$predict.model <- as.numeric(predict.model.log_all7$predict.model)
-predict.model.log_all7$match <- ifelse(predict.model.log_all7$predict.model > 0.5, 1, 0)
-predict.model.log_all7$X <- test2$X
-predict.model.log_all7
-prop.table(table(predict.model.log_all7$match))
+predict.model.log_all8 = predict(log_all8, newdata = test2, type = "response")
+predict.model.log_all8 = as.data.frame(predict.model.log_all8, na.rm = TRUE)
+predict.model.log_all8$predict.model <- as.numeric(predict.model.log_all8$predict.model)
+predict.model.log_all8$match <- ifelse(predict.model.log_all8$predict.model > 0.5, 1, 0)
+predict.model.log_all8$X <- test2$X
+predict.model.log_all8
+prop.table(table(predict.model.log_all8$match))
 
 ```
 
