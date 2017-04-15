@@ -1,0 +1,168 @@
+---
+title: "Prokect 2 Decision Trees"
+author: "Michael Im"
+date: "April 13, 2017"
+output:   
+  html_document: 
+    theme: united
+    toc: yes
+    number_sections: TRUE
+    toc_float:
+      collapsed: TRUE
+---
+
+#Introduction
+
+```{r, include = F}
+
+data1 = read.csv("sdclean.csv", header = T)
+
+```
+
+##Cleaning Data
+
+```{r}
+#who will match on this dataset
+
+#getting the numerical variables
+str(data1)
+data1$match = as.factor(data1$match)
+num = sapply(data1, is.numeric)
+nums = data1[,num]
+set.seed(12345)
+match_rand <- data1[order(runif(6000)), ]
+
+train1 = match_rand[1:5000,]
+test1 = match_rand[5001:6000,]
+prop.table(table(train1$match))
+prop.table(table(test1$match))
+
+
+```
+
+#Decision Tree
+
+##Model 1
+
+```{r}
+
+library(C50)
+matchdt <- C5.0(train1[-5], train1$match) #the data minus the dependent variable
+
+# display simple facts about the tree
+matchdt
+
+# display detailed information about the tree
+summary(matchdt)
+
+# create a factor vector of predictions on test data
+matchdt_pred <- predict(matchdt, test1)
+
+# cross tabulation of predicted versus actual classes
+library(gmodels)
+CrossTable(test1$match, matchdt_pred,
+           prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE,
+           dnn = c('actual match', 'predicted match'))
+
+```
+
+##Model 2 (100 trials)
+
+```{r}
+
+matchdt <- C5.0(train1[-5], train1$match, trials = 100) #the data minus the dependent variable
+
+# display simple facts about the tree
+matchdt
+
+# display detailed information about the tree
+summary(matchdt)
+
+# create a factor vector of predictions on test data
+matchdt_pred <- predict(matchdt, test1)
+
+# cross tabulation of predicted versus actual classes
+CrossTable(test1$match, matchdt_pred,
+           prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE,
+           dnn = c('actual match', 'predicted match'))
+
+```
+
+##Model 3 (100 trials with Error Cost Matrix)
+
+```{r}
+
+## Making some mistakes more costly than others
+# create a cost matrix
+error_cost <- matrix(c(0, 1, 0, 0), nrow = 2)
+error_cost
+
+# apply the cost matrix to the tree
+matchdt <- C5.0(train1[-5], train1$match,
+                          costs = error_cost, trails = 100)
+matchdt_pred <- predict(matchdt, test1)
+
+CrossTable(test1$match, matchdt_pred,
+           prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE,
+           dnn = c('actual match', 'predicted match'))
+prop.table(table(test1$match))
+
+```
+
+#Random Forest
+
+##Model 1
+
+```{r}
+
+train2 = data1[1:1000,]
+test2 = data1[1001:1200,]
+
+# random forest with default settings
+library(randomForest)
+set.seed(300)
+rf <- randomForest(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + career_c + imprace + exercise + gaming + concerts + exphappy + intel2_1, data = train1)
+rf
+rf_predict <- predict(rf, test1)
+CrossTable(test1$match, rf_predict,
+           prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE,
+           dnn = c('actual match', 'predicted match'))
+
+
+
+```
+
+##Model 2 (randomforest with cost matrix)
+
+```{r}
+
+error_cost <- matrix(c(0, 4, 2, 0), nrow = 2)
+error_cost
+rf <- randomForest(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + career_c + imprace + exercise + gaming + concerts + exphappy + intel2_1, data = train1, costs = error_cost)
+rf
+rf_predict <- predict(rf, test1)
+CrossTable(test1$match, rf_predict,
+           prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE,
+           dnn = c('actual match', 'predicted match'))
+
+
+```
+
+
+##Model 3
+
+```{r}
+#rf2 <- randomForest(match ~ ., data = train1)
+#rf2
+#rf2_predict <- predict(rf2, test1)
+#CrossTable(test1$match, rf2_predict,
+#           prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE,
+#           dnn = c('actual match', 'predicted match'))
+#THIS ACTUALLY HAS WORSE RESULTS SO USE THE ONLY SIGNIFICANT VARIABLES FROM THE LOG_ALL8 which is captured in "rf"
+
+
+
+```
+
+
+
