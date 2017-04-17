@@ -130,13 +130,15 @@ predict.model.log_all8 = as.data.frame(predict.model.log_all8, na.rm = TRUE)
 predict.model.log_all8$predict.model <- as.numeric(predict.model.log_all8$predict.model)
 predict.model.log_all8$match <- ifelse(predict.model.log_all8$predict.model > 0.5, 1, 0)
 predict.model.log_all8$X <- test2$X
+predict.model.log_all8$agreement = ifelse(predict.model.log_all8$match == test2$match, "True", "False")
+predict.model.log_all8$agreement = as.factor(predict.model.log_all8$agreement)
 predict.model.log_all8
-prop.table(table(predict.model.log_all8$match))
+prop.table(table(predict.model.log_all8$agreement))
 ```
 
 ##Takeaway
 ```{}
-Using our refined logistic regression, we can predict the likelihood of two individuals matching. The most important factors in crafting this prediction are int_corr, age_o, pf_o_sin, pf_o_sha, attr_o, fun_o, amb_o, prob_o, met_o, career_c, imprace, exercise, gaming, concerts, exphappy, and intel2_1.
+Using our refined logistic regression, we can predict the likelihood of two individuals matching. The most important factors in crafting this prediction are int_corr, age_o, pf_o_sin, pf_o_sha, attr_o, fun_o, amb_o, prob_o, met_o, career_c, imprace, exercise, gaming, concerts, exphappy, and intel2_1. We also found that our logistic model is accurate in predicting whether or not two people match or not 82.8% of the time.
 ```
 
 #SVM
@@ -189,7 +191,7 @@ Aside from the one above, we built several other SVM models to try and predict t
 
 ##Takeaway
 ```{}
-Of all the SVM models built, the highest accuracy achieved is only 28%. Therefore, we recommend against using this model to predict match likelihood.
+Of all the SVM models built, the highest accuracy achieved is only 28%. Therefore, we recommend against using this model to predict match likelihood. However, we do recommend using the logistic regression from the previous section as part of the predicting model.
 ```
 
 
@@ -315,7 +317,11 @@ This decision tree achieved an accuracy of ~85%. The most important decision rul
 ##Decision Tree with 100 Trials
 
 ```{r}
-#the data minus the dependent variable
+data1$match = as.factor(data1$match)
+train1 = data1[1:5000,]
+test1 = data1[5001:6499,]
+
+library(C50)
 matchdt <- C5.0(train1[-5], train1$match, trials = 100)
 
 # display simple facts about the tree
@@ -359,64 +365,19 @@ prop.table(table(test1$match))
 
 ```
 
+
+
 ```{}
-This model achieves about the same accuracy of the original model despite the addition of an error cost matrix.
+This model achieves about the same accuracy of the original model despite the addition of an error cost matrix. In fact, it seems the accuracy of the model lowered overall.
 ```
+
+
 
 ##Takeaway
 
 ```{}
-The decision tree model has achieved the best accuracy ~85% so far. We can use this to accurately predict the likelihood of two individuals matching.
+The decision tree model has achieved the best accuracy ~85% so far. We can use this to accurately predict the likelihood of two individuals matching. Also, the logistic regression model is also good in predicting if two people will match or not (about 82.8% accuracy).
 ```
 
 
-#Random Forest
 
-##Basic Model
-
-```{r}
-train2 = data1[1:1000,]
-test2 = data1[1001:1200,]
-
-# random forest with default settings
-library(randomForest)
-set.seed(300)
-rf <- randomForest(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + career_c + imprace + exercise + gaming + concerts + exphappy + intel2_1, data = train1)
-rf
-rf_predict <- predict(rf, test1)
-CrossTable(test1$match, rf_predict,
-           prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE,
-           dnn = c('actual match', 'predicted match'))
-```
-
-##Model with Cost Matrix
-
-```{r}
-
-error_cost <- matrix(c(0, 4, 2, 0), nrow = 2)
-error_cost
-rf <- randomForest(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + career_c + imprace + exercise + gaming + concerts + exphappy + intel2_1, data = train1, costs = error_cost)
-rf
-rf_predict <- predict(rf, test1)
-CrossTable(test1$match, rf_predict,
-           prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE,
-           dnn = c('actual match', 'predicted match'))
-
-
-```
-
-
-##Model 3
-
-```{r}
-#rf2 <- randomForest(match ~ ., data = train1)
-#rf2
-#rf2_predict <- predict(rf2, test1)
-#CrossTable(test1$match, rf2_predict,
-#           prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE,
-#           dnn = c('actual match', 'predicted match'))
-#THIS ACTUALLY HAS WORSE RESULTS SO USE THE ONLY SIGNIFICANT VARIABLES FROM THE LOG_ALL8 which is captured in "rf"
-
-
-
-```
