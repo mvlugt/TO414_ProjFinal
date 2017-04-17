@@ -130,13 +130,15 @@ predict.model.log_all8 = as.data.frame(predict.model.log_all8, na.rm = TRUE)
 predict.model.log_all8$predict.model <- as.numeric(predict.model.log_all8$predict.model)
 predict.model.log_all8$match <- ifelse(predict.model.log_all8$predict.model > 0.5, 1, 0)
 predict.model.log_all8$X <- test2$X
+predict.model.log_all8$agreement = ifelse(predict.model.log_all8$match == test2$match, "True", "False")
+predict.model.log_all8$agreement = as.factor(predict.model.log_all8$agreement)
 predict.model.log_all8
-prop.table(table(predict.model.log_all8$match))
+prop.table(table(predict.model.log_all8$agreement))
 ```
 
 ##Takeaway
 ```{}
-Using our refined logistic regression, we can predict the likelihood of two individuals matching. The most important factors in crafting this prediction are int_corr, age_o, pf_o_sin, pf_o_sha, attr_o, fun_o, amb_o, prob_o, met_o, career_c, imprace, exercise, gaming, concerts, exphappy, and intel2_1.
+Using our refined logistic regression, we can predict the likelihood of two individuals matching. The most important factors in crafting this prediction are int_corr, age_o, pf_o_sin, pf_o_sha, attr_o, fun_o, amb_o, prob_o, met_o, career_c, imprace, exercise, gaming, concerts, exphappy, and intel2_1. We also found that our logistic model is accurate in predicting whether or not two people match or not 82.8% of the time.
 ```
 
 #SVM
@@ -159,6 +161,7 @@ For the SVM model, we needed to convert data into numeric form and recreate the 
 ##SVM Model Using Only Significant Variables
 
 ```{r}
+library(kernlab)
 #USING ONLY THE VARIABLES THAT WORKED IN THE 90% LOGISTIC REGRESSION (log_all7)
 train2 = subset(train1, select = c(int_corr , age_o , pf_o_sin , pf_o_sha , attr_o , fun_o , amb_o , prob_o , met_o , career_c , imprace , exercise , gaming , movies , concerts , exphappy , attr2_1 , intel2_1, match))
 test2 = subset(test1, select = c(int_corr , age_o , pf_o_sin , pf_o_sha , attr_o , fun_o , amb_o , prob_o , met_o , career_c , imprace , exercise , gaming , movies , concerts , exphappy , attr2_1 , intel2_1, match))
@@ -188,7 +191,7 @@ Aside from the one above, we built several other SVM models to try and predict t
 
 ##Takeaway
 ```{}
-Of all the SVM models built, the highest accuracy achieved is only 28%. Therefore, we recommend against using this model to predict match likelihood.
+Of all the SVM models built, the highest accuracy achieved is only 28%. Therefore, we recommend against using this model to predict match likelihood. However, we do recommend using the logistic regression from the previous section as part of the predicting model.
 ```
 
 
@@ -264,4 +267,117 @@ The above neural network model utilizes 1 hidden neuron and results in a 59% acc
 ```{}
 While our neural network model is not perfect, it certainly can help us formulate hypothesis of the likelihood of matching with a randomly selected potential partner. Still, we do not recommend solely relying on this model's prediction. Combining this prediction with that of other models would strengthen a prediction.
 ```
+
+#Decision Tree
+
+##Prepare Data
+
+```{r}
+#getting the numerical variables
+str(data1)
+data1$match = as.factor(data1$match)
+num = sapply(data1, is.numeric)
+nums = data1[,num]
+set.seed(12345)
+match_rand <- data1[order(runif(6000)), ]
+
+train1 = match_rand[1:5000,]
+test1 = match_rand[5001:6000,]
+prop.table(table(train1$match))
+prop.table(table(test1$match))
+```
+
+##Decision Tree with 50 Trials
+
+```{r}
+library(C50)
+#the data minus the dependent variable
+matchdt <- C5.0(train1[-5], train1$match)
+
+# display simple facts about the tree
+matchdt
+
+# display detailed information about the tree
+summary(matchdt)
+
+# create a factor vector of predictions on test data
+matchdt_pred <- predict(matchdt, test1)
+
+# cross tabulation of predicted versus actual classes
+library(gmodels)
+CrossTable(test1$match, matchdt_pred,
+           prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE,
+           dnn = c('actual match', 'predicted match'))
+```
+
+```{}
+This decision tree achieved an accuracy of ~85%. The most important decision rule in this model is dec_0; if this is false, the model predicts partners to not match.
+```
+
+##Decision Tree with 100 Trials
+
+```{r}
+data1$match = as.factor(data1$match)
+train1 = data1[1:5000,]
+test1 = data1[5001:6499,]
+
+library(C50)
+matchdt <- C5.0(train1[-5], train1$match, trials = 100)
+
+# display simple facts about the tree
+matchdt
+
+# display detailed information about the tree
+summary(matchdt)
+
+# create a factor vector of predictions on test data
+matchdt_pred <- predict(matchdt, test1)
+
+# cross tabulation of predicted versus actual classes
+CrossTable(test1$match, matchdt_pred,
+           prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE,
+           dnn = c('actual match', 'predicted match'))
+
+```
+
+```{}
+When increasing the number of trials to 100 in the above model, we saw no substantial increase in accuracy.
+```
+
+
+##Decision Tree with 100 trials and Error Cost Matrix
+
+```{r}
+#Making some mistakes more costly than others
+#create a cost matrix
+error_cost <- matrix(c(0, 1, 0, 0), nrow = 2)
+error_cost
+
+# apply the cost matrix to the tree
+matchdt <- C5.0(train1[-5], train1$match,
+                          costs = error_cost, trails = 100)
+matchdt_pred <- predict(matchdt, test1)
+
+CrossTable(test1$match, matchdt_pred,
+           prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE,
+           dnn = c('actual match', 'predicted match'))
+prop.table(table(test1$match))
+
+```
+
+
+
+```{}
+This model achieves about the same accuracy of the original model despite the addition of an error cost matrix. In fact, it seems the accuracy of the model lowered overall.
+```
+
+
+
+##Takeaway
+
+```{}
+The decision tree model has achieved the best accuracy ~85% so far. We can use this to accurately predict the likelihood of two individuals matching. Also, the logistic regression model is also good in predicting if two people will match or not (about 82.8% accuracy).
+```
+
+
 
