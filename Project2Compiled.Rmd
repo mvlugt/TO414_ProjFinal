@@ -33,6 +33,7 @@ test1 = data1[5001:6000,]
 
 train2 = data1[1:5000,]
 test2 = data1[5001:6000,]
+
 #tele_nn <- model.matrix(~ job + marital + education + default + housing + loan +  contact + month + day_of_week + poutcome + y, data1 = tele1)
 ```
 
@@ -67,7 +68,7 @@ From the original base model, we identified the variables that held signficant w
 ```
 
 ```{r}
-log_all3 = glm(match ~ gender + int_corr + age_o + samerace + race_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + race + goal + career_c + imprace + sports + exercise + art + gaming + clubbing + tv + theater + movies + concerts + yoga + exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1 + shar2_1, data = train2, family = "binomial")
+log_all3 = glm(match ~ gender + int_corr + age_o + samerace + race_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + race + goal + imprace + sports + exercise + art + gaming + clubbing + tv + theater + movies + concerts + yoga + exphappy + attr2_1 + sinc2_1 + intel2_1 + fun2_1 + amb2_1 + shar2_1, data = train2, family = "binomial")
 summary(log_all3)
 ```
 
@@ -76,7 +77,7 @@ Our team then identified significant variables from the basic model and created 
 ```
 
 ```{r}
-log_all4 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + goal + career_c + imprace + exercise + gaming + clubbing + movies + concerts + exphappy + attr2_1 + sinc2_1 + intel2_1, data = train2, family = "binomial")
+log_all4 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + goal + imprace + exercise + gaming + clubbing + movies + concerts + exphappy + attr2_1 + sinc2_1 + intel2_1, data = train2, family = "binomial")
 summary(log_all4)
 ```
 
@@ -85,7 +86,7 @@ In the next iteration of our model, we again determined which variables are the 
 ```
 
 ```{r}
-log_all5 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + goal + career_c + imprace + exercise + gaming + clubbing + movies + concerts + exphappy + attr2_1 + intel2_1, data = train2, family = "binomial")
+log_all5 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + goal + imprace + exercise + gaming + clubbing + movies + concerts + exphappy + attr2_1 + intel2_1, data = train2, family = "binomial")
 summary(log_all5)
 ```
 
@@ -94,7 +95,7 @@ Once again, we ran the model and determined which variables are best. We elimina
 ```
 
 ```{r}
-log_all6 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + goal + career_c + imprace + exercise + gaming + movies + concerts + exphappy + attr2_1 + intel2_1, data = train2, family = "binomial")
+log_all6 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + goal + imprace + exercise + gaming + movies + concerts + exphappy + attr2_1 + intel2_1, data = train2, family = "binomial")
 summary(log_all6)
 ```
 
@@ -103,7 +104,7 @@ After this model, we determined that goal is less significant than the other var
 ```
 
 ```{r}
-log_all7 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + career_c + imprace + exercise + gaming + movies + concerts + exphappy + attr2_1 + intel2_1, data = train2, family = "binomial")
+log_all7 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + imprace + exercise + gaming + movies + concerts + exphappy + attr2_1 + intel2_1, data = train2, family = "binomial")
 summary(log_all7)
 ```
 
@@ -112,7 +113,7 @@ After this model, we removed movies and attr2_1.
 ```
 
 ```{r}
-log_all8 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + career_c + imprace + exercise + gaming + concerts + exphappy + intel2_1, data = train2, family = "binomial")
+log_all8 = glm(match ~ int_corr + age_o + pf_o_sin + pf_o_sha + attr_o + fun_o + amb_o + prob_o + met_o + imprace + exercise + gaming + concerts + exphappy + intel2_1, data = train2, family = "binomial")
 summary(log_all8)
 ```
 
@@ -372,12 +373,65 @@ This model achieves about the same accuracy of the original model despite the ad
 ```
 
 
-
 ##Takeaway
 
 ```{}
 The decision tree model has achieved the best accuracy ~85% so far. We can use this to accurately predict the likelihood of two individuals matching. Also, the logistic regression model is also good in predicting if two people will match or not (about 82.8% accuracy).
 ```
 
+#Additional Exploration: Neural Network For Decision Prediction
+
+```{r}
+raw_data <- read.csv("Speed Dating Data.csv")
+raw_data <- raw_data[-35] #Drop Field
+raw_data <- raw_data[-42] #Drop From
+raw_data <- raw_data[-47] #Drop Career
+raw_data <- raw_data[-1] #Drop iid
+raw_data <- raw_data[-1]# Drop id
+raw_data <- raw_data[-10]# Drop pid
+raw_data <- raw_data[-2]
+raw_data <- raw_data[-3]
+raw_data <- raw_data[-3]
+raw_data <- raw_data[-3]
+raw_data <- raw_data[-4]
+raw_data <- raw_data[-4]
+
+num = sapply(raw_data, is.numeric)
+nums = raw_data[,num]
+
+nums <- nums[sample(nrow(nums), nrow(nums)),]
+
+nums[nums=='NA'] <- NA
+for(i in 1:ncol(nums)){
+  nums[is.na(nums[,i]), i] <- mean(nums[,i], na.rm = TRUE)
+}
+norm <- as.data.frame(lapply(nums, normalize))
+
+
+random_ids <- order(runif(8378)) #Randomize again
+train <- norm[random_ids[1:6283], ]
+test <- norm[random_ids[6283:8378], ]
+
+library(neuralnet)
+feature_formula <- as.formula(paste0('dec_o ~', paste(names(train[!names(train) %in% 'dec_o']), collapse = '+')))
+
+neural_net_model <- neuralnet(formula = feature_formula, data = train)
+
+
+model_results1 = compute(neural_net_model, test[-21]) #Remove dec_o
+prediction = model_results1$net.result
+rounded_prediction <- ifelse(prediction > 0.5, 1, 0)
+cor(rounded_prediction, test$dec_o)
+
+```
+
+```{}
+
+We decided to try cleaning our own data (not using the provided script) in order to explore some of the more telling features in the data. One that we isolated, and considered very valuable for those dating, was the dec_o feature which represented the "decision of a partner the night of the event". We wanted to train a model that would be able to go further than just matching and predict whether or not someone would end up liking their partner.
+We decided to use a Neurel Net because we could afford the slightly slower training and model queries.
+
+This model ended up achieving very solid results when predicting predicting based on the dec_o feature - either positive or negative decision of another partner. This led us to believe that, with more time and computing power, even further insights could be mined from this data.
+
+```
 
 
