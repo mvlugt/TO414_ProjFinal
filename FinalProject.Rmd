@@ -1,0 +1,65 @@
+---
+title: "FinalProject"
+author: "Mike"
+date: "4/9/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+raw_data <- read.csv("Speed Dating Data.csv")
+raw_data <- raw_data[-35] #Drop Field
+raw_data <- raw_data[-42] #Drop From
+raw_data <- raw_data[-47] #Drop Career
+raw_data <- raw_data[-1] #Drop iid
+raw_data <- raw_data[-1]# Drop id
+raw_data <- raw_data[-10]# Drop pid
+raw_data <- raw_data[-2]
+raw_data <- raw_data[-3]
+raw_data <- raw_data[-3]
+raw_data <- raw_data[-3]
+raw_data <- raw_data[-4]
+raw_data <- raw_data[-4]
+#raw_data <- subset(raw_data, match == 1)
+#raw_data <- raw_data[-10]
+
+#cc_data <- read.csv("sdclean.csv")
+
+num = sapply(raw_data, is.numeric)
+nums = raw_data[,num]
+
+nums <- nums[sample(nrow(nums), nrow(nums)),] #Get a random sample since the data is organized by participant
+
+#sdclean <- na.omit(sdrandom)
+nums[nums=='NA'] <- NA
+for(i in 1:ncol(nums)){
+  nums[is.na(nums[,i]), i] <- mean(nums[,i], na.rm = TRUE)
+}
+
+
+normalize <- function(x) {
+  return ((x - min(x)) / (max(x) - min(x)))
+}
+
+#nums <- as.data.frame(model.matrix(~ . -1, data = nums))
+norm <- as.data.frame(lapply(nums, normalize))
+
+
+random_ids <- order(runif(8378))
+train <- norm[random_ids[1:6283], ]
+test <- norm[random_ids[6283:8378], ]
+
+library(neuralnet)
+feature_formula <- as.formula(paste0('dec_o ~', paste(names(train[!names(train) %in% 'dec_o']), collapse = '+')))
+
+neural_net_model <- neuralnet(formula = feature_formula, data = train)
+
+#prediction for the model
+
+model_results1 = compute(neural_net_model, test[-21]) #Remove dec_o
+# obtain predicted strength values
+prediction = model_results1$net.result
+rounded_prediction <- ifelse(prediction > 0.5, 1, 0)
+# examine the correlation between predicted and actual values
+cor(rounded_prediction, test$dec_o)
+
+```

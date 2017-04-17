@@ -67,8 +67,9 @@ plot(match_model1)
 model_results1 = compute(match_model1, test1[2:63]) #every column except the result column and X
 # obtain predicted strength values
 predicted_match1 = model_results1$net.result
+rounded_prediction <- ifelse(predicted_match1 > 0.5, 1, 0) #THIS ROUNDS TO 0 or 1 to match test match format
 # examine the correlation between predicted and actual values
-cor(predicted_match1, test1$match)
+cor(rounded_prediction, test1$match)
 
 ```
 
